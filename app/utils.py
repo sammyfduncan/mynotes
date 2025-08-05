@@ -15,7 +15,11 @@ def process_content(content_id : int):
             return
 
         #now call llm util function
-        note_str = gen_notes(file_path=record.file_path)
+        note_str = gen_notes(
+            file_path=record.file_path,
+            style=record.style
+            )
+        
         if not note_str:
             record.status = "failed"
             return

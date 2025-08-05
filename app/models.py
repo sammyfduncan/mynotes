@@ -14,6 +14,7 @@ class Content(Base):
     file_path = Column(String)
     note_file_path = Column(String)
     status = Column(String, default="processing")
+    style = Column(String, default="default")
 
 #api response model for generated notes 
 class Notes(BaseModel):

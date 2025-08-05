@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def gen_notes(file_path : str) -> str:
+def gen_notes(file_path : str, style : str) -> str:
     #links api key in .env
     generativeai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     
@@ -16,7 +16,8 @@ def gen_notes(file_path : str) -> str:
     model = generativeai.GenerativeModel('gemini-2.0-flash')
 
     #generate notes 
-    prompt = "This is an API test. If you can see this prompt and PDF, say an interesting fact."
+    prompt = PROMPTS.get(style, PROMPTS["standard"])
+    
     try:
         response = model.generate_content([prompt, uploaded_file])
         return response.text
@@ -24,6 +25,12 @@ def gen_notes(file_path : str) -> str:
         print(f"Error generating {e}")
         return ""
 
-    
+PROMPTS = {
+    "default": ""
+    "concise": ""
+    "detailed": ""
+    "informative": ""
+}
+
 
 

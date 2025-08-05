@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter
+from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Form
 from pathlib import Path
 from sqlalchemy.orm import Session
 from .database import get_db
@@ -8,15 +8,27 @@ import uuid, shutil
 #defines API routes 
 
 router = APIRouter()
+MAX_SIZE = 10 * 1024 * 1024
 
 #uploading content 
 @router.post("/upload/")
 async def upload_file(
     file : UploadFile = File(...),
     db : Session = Depends(get_db),
-    background_tasks : BackgroundTasks
+    background_tasks : BackgroundTasks,
+    note_style : str = Form("default")
     ):
-    #save file
+        #check size
+        file.file.seek(0, 2)
+        file_size = file.file.tell()
+        file.file.seek(0)
+        if file_size > MAX_SIZE:
+             raise HTTPException(
+                  status_code=413,
+                  detail=f"File is over the limit of {MAX_SIZE / 1024 * 1024}"
+             )
+        
+        #save file
         id_unique = uuid.uuid4()
         file_ext = Path(file.filename).suffix
         new_filename = f"{id_unique}{file_ext}"
@@ -30,6 +42,7 @@ async def upload_file(
         content = Content()
         content.filename = file.filename
         content.file_path = str(file_path)
+        content.style = note_style
 
         db.add(content)
         db.commit()
