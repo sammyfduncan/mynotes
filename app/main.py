@@ -6,6 +6,5 @@ app = FastAPI()
 #include router in app
 app.include_router(router)
 
-
 #init engine 
 Base.metadata.create_all(bind=engine)

@@ -16,7 +16,7 @@ def gen_notes(file_path : str) -> str:
     model = generativeai.GenerativeModel('gemini-2.0-flash')
 
     #generate notes 
-    prompt = "Act as an academic assistant - create informative, well-explained but concise study notes based on this lecture."
+    prompt = "This is an API test. If you can see this prompt and PDF, say an interesting fact."
     try:
         response = model.generate_content([prompt, uploaded_file])
         return response.text
