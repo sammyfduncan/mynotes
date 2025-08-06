@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 if (data) {
                     console.log('Success:', data);
                     //updates page
-                    displayDownloadLink(data);
+                    activateDownloadLink(data);
                 }
             })
             .catch(error => {
@@ -95,19 +95,13 @@ document.addEventListener('DOMContentLoaded', function(){
 })
 
 //helpers
-function displayDownloadLink(data) {
-    //clear container
-    notesContainer.innerHTML = '';
-
-    //create a new link el
-    const downloadLink = document.createElement('a');
-    //download endpoint
-    downloadLink.href = `/download/${data.id}`;
-    downloadLink.className = 'btn btn-success';
-    downloadLink.textContent = `Download Notes for "${data.filename}"`;
-
-    //add link to page
-    notesContainer.appendChild(downloadLink);
+function activateDownloadLink(data) {
+    
+    const downloadButton = document.getElementById('download-btn');
+    downloadButton.addEventListener('click', function() {
+        //when clicked goto download URL
+        window.location.href = `/download/${data.id}`;
+    });
 }
 
 function displayError(message) {
