@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+#hardcoded prompts based on user choice 
+PROMPTS = {
+    "default" : "Generate well-rounded, informative study notes based on these lecture slides.",
+    "concise": "Generate concise study notes based on this lecture.",
+    "detailed": "Generate very detailed and well-structured study notes based on this lecture."
+}
+
 def gen_notes(file_path : str, style : str) -> str:
     #links api key in .env
     generativeai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -16,21 +23,14 @@ def gen_notes(file_path : str, style : str) -> str:
     model = generativeai.GenerativeModel('gemini-2.0-flash')
 
     #generate notes 
-    prompt = PROMPTS.get(style, PROMPTS["standard"])
-    
+    prompt = PROMPTS.get(style, PROMPTS["default"])
+
     try:
         response = model.generate_content([prompt, uploaded_file])
         return response.text
     except Exception as e:
         print(f"Error generating {e}")
         return ""
-
-PROMPTS = {
-    "default": ""
-    "concise": ""
-    "detailed": ""
-    "informative": ""
-}
 
 
 

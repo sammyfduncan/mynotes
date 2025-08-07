@@ -22,6 +22,7 @@ def process_content(content_id : int):
         
         if not note_str:
             record.status = "failed"
+            db.commit()
             return
 
         #call helper
@@ -33,6 +34,7 @@ def process_content(content_id : int):
         #update record in memory
         record.note_file_path = note_path
         record.status = "complete"
+        record.notes = note_str
 
         #commit changes to db
         db.commit()

@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            //file validation
+            const MAX_FILE_SIZE = 10 * 1024 * 1024;
+            if (file.size > MAX_FILE_SIZE) {
+                alert(`The file is larger than the maximum of ${MAX_FILE_SIZE / (1024 * 1024)} MB.`);
+                return;
+            }
+
+
             const styleSelected = document.querySelector('#style-selector .btn.active').value;
             const formData = new FormData();
             formData.append('file', file);
@@ -41,17 +49,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayUploadError('The initial file upload failed. Please try again.');
             });
         });
-
+//
         function checkStatus(id) {
-            fetch(`/results/${id}`)
+            fetch(`/api/results/${id}`)
             .then(response => {
                 if (response.status === 200) { // complete
-                    return response.json();
+                    //get JSON
+                    response.json().then(data => {
+                        console.log("Processing complete, redirecting...");
+                        statusText.textContent = 'Notes generated, please wait...';
+                        window.location.href = `/results.html?id=${data.id}`;
+                    });
                 } else if (response.status === 202) { // processing
                     statusText.textContent = 'Your file is being processed, please wait...';
                     console.log("Status is 'processing', checking again in 3 seconds...");
                     setTimeout(() => checkStatus(id), 3000); // continue polling 
-                    return null;
                 } else { // any error
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
