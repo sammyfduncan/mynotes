@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/bss-overrides.css">
     <link rel="stylesheet" href="assets/css/Navbar-With-Button-icons.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
 
 <body class="d-flex min-vh-100 flex-column">
@@ -26,13 +28,31 @@
             </div>
         </div>
     </nav>
-    <div class="container-fluid text-center flex-grow-1 px-8 py-3">
-        <div class="card">
-            <div class="card-body text-primary py-5">
-                <h3 class="card-title"><strong>Quickly generate study notes from your lecture slides</strong></h3>
-                <p class="py-4 card-text"><strong>Upload your lectures here</strong></p>
+    <div class="container-fluid text-center d-flex flex-grow-1 justify-content-start px-8 py-3">
+        <div class="col col-lg-6 offset-lg-0 h-100">
+            <div class="card">
+                <div class="card-body flex-grow-1 flex-shrink-0 flex-fill mb-0 pb-10">
+                    <h3 class="fw-bold text-primary card-title">Upload your lectures here</h3>
+                    <p class="text-primary mt-5 card-text">Simply upload your lecture content, and let us do the rest.&nbsp;</p>
+                    <div class="mt-0 pt-0 mb-0 pb-0"></div>
+                    <h6 class="fw-bold text-primary mt-7 pt-0 mb-3 pb-0">What does each style do?</h6>
+                    <p class="text-primary mt-5 mb-0 card-text" style="font-size: 14px;">Default style explanation</p>
+                    <p class="text-primary mt-4 mb-0 card-text" style="font-size: 14px;">Detailed style explanation</p>
+                    <p class="text-primary mt-4 pt-0 mb-0 pb-0 card-text" style="font-size: 14px;">Concise style explanation</p>
+                </div>
             </div>
-        </div><input class="p-0 mx-0 my-5" type="file" id="upload-form"><small class="form-text">Note that only .pdf and .pptx file formats are supported.</small><button class="btn btn-primary" id="file_submit" type="button">Button</button>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body mt-6"><input class="form-control-sm ps-0 pe-0 mt-4 pt-0 mb-0 pb-0 mx-0" type="file" id="upload-form"><small class="form-text fw-light text-center d-block p-0 mt-0 pt-0 mb-3 pb-3" style="font-size: 12px;">Note that only .pdf and .pptx file formats are supported.</small>
+                    <div class="mt-3 pt-0 mb-0 pb-0"><small class="fw-semibold text-center text-primary ms-0 me-0 mt-0 pt-0 mb-0 pb-0">Now choose your style.&nbsp;</small></div>
+                    <div class="btn-group btn-group-sm mt-2 pt-0 mb-0 pb-0" role="group" id="style-selector"><button class="btn btn-primary active" id="default" type="button" value="default">Standard</button><button class="btn btn-primary" id="concise" type="button" value="concise">Concise</button><button class="btn btn-primary" id="detailed" type="button" value="detailed">Detailed</button></div><button class="btn btn-primary btn-sm text-bg-primary ms-6 me-6 mt-5 pt-2 mb-0 pb-0 px-4" id="file_submit" type="button">Generate Notes</button><span class="spinner-border d-none" role="status" id="upload-spinner"></span>
+                    <div class="mb-0 pb-4">
+                        <p class="text-primary" id="upload-status-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <footer class="text-center bg-body mt-auto py-2">
         <div class="container-fluid">
@@ -63,6 +83,7 @@
         </div>
     </footer>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 
 </html>

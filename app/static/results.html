@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/bss-overrides.css">
     <link rel="stylesheet" href="assets/css/Navbar-With-Button-icons.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
 
 <body class="d-flex min-vh-100 flex-column">
@@ -22,11 +24,22 @@
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
-                </ul><button class="btn btn-primary fs-5 text-bg-primary" type="button">Create Notes</button>
+                </ul><a class="btn btn-primary fs-5 text-bg-primary" role="button" href="upload.html">Create Notes</a>
             </div>
         </div>
     </nav>
-    <div class="container-fluid text-center flex-grow-1 px-8 py-5" id="result-container"><button class="btn btn-primary text-bg-primary" id="download-btn" type="button">Download</button></div>
+    <div class="container-fluid text-center ms-0 ps-0 me-5 pe-0 pt-0 mb-0 pb-8" id="result-container">
+        <div class="card pb-0"><div class="card-body pt-10 mb-0 pb-10">
+    <pre class="pt-0">testing
+        <code id="notes-preview">loading notes preview...</code>
+        </pre>
+</div>
+            <h2 class="fw-semibold text-primary mt-0 pt-0 pb-0" id="filename-display">Loading filename</h2>
+        </div>
+        <div class="row">
+            <div class="col"><button class="btn btn-primary btn-lg text-bg-primary d-none mt-5 mb-0" id="download-btn" type="button">Button</button></div>
+        </div>
+    </div>
     <footer class="text-center bg-body mt-auto py-2">
         <div class="container-fluid">
             <div class="row row-cols-1 row-cols-lg-3">
@@ -56,6 +69,7 @@
         </div>
     </footer>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 
 </html>
