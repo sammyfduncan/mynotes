@@ -10,45 +10,53 @@ document.addEventListener('DOMContentLoaded', function(){
     //get element for uploading file, and then submitting
     const uploadFile = document.getElementById('upload-form');
     const submitFile = document.getElementById('file_submit');
+    const uploadSpinner = document.getElementById('upload-spinner');
 
     //add listener for submit button click
-    submitFile.addEventListener('click', function() {
+    if (submitFile) {
+        submitFile.addEventListener('click', function() {
 
-        //get the input file
-        const file = uploadFile.files[0];
+            //get the input file
+            const file = uploadFile.files[0];
 
-        //check file submitted correctly
-        if (!file) {
-            alert("No file selected.");
-            return;
-        }
+            //check file submitted correctly
+            if (!file) {
+                alert("No file selected.");
+                return;
+            }
 
-        //get style of note 
-        const styleSelected = document.querySelector('input[name="note_style"]:checked').value;
+            //get style of note 
+            const styleSelected = document.querySelector('input[name="note_style"]:checked').value;
 
-        //create formdata and make fetch call
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('note_style', styleSelected);
+            //create formdata and make fetch call
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('note_style', styleSelected);
 
-        fetch('/upload/', {
-            method: 'POST',
-            body: formData,
-        })
-        
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            //redirect to results
-            window.location.href = `/results.html?id=${data.content_id}`;
-        })
+            //show spinner 
+            uploadSpinner.classList.remove('d-none');
 
-        //error check
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error occured during file upload.');
+            fetch('/upload/', {
+                method: 'POST',
+                body: formData,
+            })
+            
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                //redirect to results
+                window.location.href = `/results.html?id=${data.content_id}`;
+            })
+            //error check
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error occured during file upload.');
+
+                //loading spinner
+                uploadSpinner.classList.add('d-none');
+            });
         });
-    });
+    }
 
     //logic for serving generated file
     if (notesContainer) {
@@ -87,24 +95,26 @@ document.addEventListener('DOMContentLoaded', function(){
             })
             .catch(error => {
                 console.error('Failed to retrieve notes.');
+                displayError('Error: could not retrieve notes.');
             });
         }
         //begin checking when page loads
         checkStatus(contentId);
     }
+
+    //helpers
+    function activateDownloadLink(data) {
+        
+        const downloadButton = document.getElementById('download-btn');
+        downloadButton.addEventListener('click', function() {
+            //when clicked goto download URL
+            window.location.href = `/download/${data.id}`;
+        });
+    }
+
+    function displayError(message) {
+        notesContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+    }
 })
 
-//helpers
-function activateDownloadLink(data) {
-    
-    const downloadButton = document.getElementById('download-btn');
-    downloadButton.addEventListener('click', function() {
-        //when clicked goto download URL
-        window.location.href = `/download/${data.id}`;
-    });
-}
-
-function displayError(message) {
-    notesContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
-}
 
