@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const submitFile = document.getElementById('file_submit');
     const uploadSpinner = document.getElementById('upload-spinner');
 
-    //add listener for submit button click
+    //upload.html logic
     if (submitFile) {
         submitFile.addEventListener('click', function() {
 
@@ -26,15 +26,15 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             //get style of note 
-            const styleSelected = document.querySelector('input[name="note_style"]:checked').value;
+            const styleSelected = document.querySelector('#style-selector .btn.active').value;
 
             //create formdata and make fetch call
             const formData = new FormData();
             formData.append('file', file);
             formData.append('note_style', styleSelected);
 
-            //show spinner 
-            uploadSpinner.classList.remove('d-none');
+            //get user info text
+            const statusText = document.getElementById('upload-status-text');
 
             fetch('/upload/', {
                 method: 'POST',
@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', function(){
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                //redirect to results
-                window.location.href = `/results.html?id=${data.content_id}`;
+                //begin polling
+                checkStatus(data.content_id); 
             })
             //error check
             .catch(error => {
@@ -56,15 +56,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 uploadSpinner.classList.add('d-none');
             });
         });
-    }
-
-    //logic for serving generated file
-    if (notesContainer) {
-
-        //get content id from url
-        const urlParams = new URLSearchParams(window.location.search);
-        //this holds value from url
-        const contentId = urlParams.get('id');
 
         //fetch call logic
         function checkStatus(id) {
@@ -77,6 +68,8 @@ document.addEventListener('DOMContentLoaded', function(){
                     return response.json();
                 } //processing. start polling
                 if (response.status === 202) {
+
+                    statusText.textContent = 'Processing, please wait...';
                     console.log('Processing...');
                     setTimeout(() => checkStatus(id), 3000);
                     //stop if failed
@@ -86,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 throw new Error('Failed to get server response');
             })
             .then(data => {
+                statusText.textContent = 'Uploaded file, preparing to create notes...';
                 //runs if SC is 200
                 if (data) {
                     console.log('Success:', data);
@@ -98,22 +92,63 @@ document.addEventListener('DOMContentLoaded', function(){
                 displayError('Error: could not retrieve notes.');
             });
         }
-        //begin checking when page loads
-        checkStatus(contentId);
+
+        //helpers
+        function activateDownloadLink(data) {
+            
+            const downloadButton = document.getElementById('download-btn');
+            downloadButton.addEventListener('click', function() {
+                //when clicked goto download URL
+                window.location.href = `/results.html?id=${data.id}`;
+            });
+        }
+
+        function displayError(message) {
+            notesContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+        }
     }
 
-    //helpers
-    function activateDownloadLink(data) {
-        
-        const downloadButton = document.getElementById('download-btn');
-        downloadButton.addEventListener('click', function() {
-            //when clicked goto download URL
-            window.location.href = `/download/${data.id}`;
-        });
-    }
+    //results.html logic
+    if (notesContainer) {
 
-    function displayError(message) {
-        notesContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+        //content id from url
+        const urlParams = new URLSearchParams(window.location.search);
+        //holds value from url
+        const contentId = urlParams.get('id');
+
+        //fetch results from API
+        fetch(`/results/${contentId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('error fetching API response');
+                }
+                return response.json();
+            }) //successful
+            .then(data => {
+                showResults(data);
+            })
+            .catch(error => {
+                displayError("Failed to load notes.");
+            });
+
+            //helper
+            function showResults(data) {
+
+                //elements to update
+                const fn_display = document.getElementById('filename-display');
+                const prev_notes = document.getElementById('notes-preview');
+                const download_btn = document.getElementById('download-btn');
+
+                //update content
+                fn_display.textContent = `${data.filename}`;
+                prev_notes.textContent = data.notes;
+
+                //download btn 
+                download_btn.classList.remove('d-none');
+                download_btn.addEventListener('click', function() {
+                    window.location.href = `/download/${data.id}`;
+                });
+            }
     }
 })
 
