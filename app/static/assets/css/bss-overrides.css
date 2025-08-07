@@ -1,3 +1,7 @@
+.m-2 {
+  margin: .5rem!important;
+}
+
 .mx-0 {
   margin-right: 0!important;
   margin-left: 0!important;
@@ -41,10 +45,6 @@
   margin-top: 4.5rem !important;
 }
 
-.mt-7 {
-  margin-top: 6rem !important;
-}
-
 .mt-auto {
   margin-top: auto!important;
 }
@@ -65,8 +65,8 @@
   margin-right: 3rem!important;
 }
 
-.me-6 {
-  margin-right: 4.5rem !important;
+.me-10 {
+  margin-right: 10.5rem !important;
 }
 
 .me-auto {
@@ -89,22 +89,16 @@
   margin-left: 0!important;
 }
 
-.ms-6 {
-  margin-left: 4.5rem !important;
+.ms-3 {
+  margin-left: 1rem!important;
+}
+
+.ms-10 {
+  margin-left: 10.5rem !important;
 }
 
 .p-0 {
   padding: 0!important;
-}
-
-.px-4 {
-  padding-right: 1.5rem!important;
-  padding-left: 1.5rem!important;
-}
-
-.px-8 {
-  padding-left: 7.5rem !important;
-  padding-right: 7.5rem !important;
 }
 
 .py-2 {
