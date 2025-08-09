@@ -1,10 +1,10 @@
 from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Form
 from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
 from sqlalchemy.orm import Session
-from .database import get_db
-from .models import Notes, Content
-from .utils import process_content
+from datetime import timedelta
+from app import database, models, utils, schemas, security
 import uuid, shutil
 #defines API routes 
 
@@ -99,3 +99,59 @@ async def download_note(content_id : int, db : Session = Depends(get_db)):
           media_type='text/markdown'
      )
 
+#user registration endpoint
+@router.post("/users/", response_model=schemas.UserCheck)
+async def new_user(
+     user : schemas.CreateUser,
+     db : Session = Depends(get_db)
+):
+     db_user = db.query(models.User).filter(
+          models.User.username == user.username
+     ).first()
+
+     if (db_user):
+          raise HTTPException(status_code=400, detail="Username already registered")
+     
+     hashed_pw = security.get_pw_hash(user.password)
+     db_user = models.User(
+          username=user.username,
+          hashed_pw = hashed_pw
+     )
+     db.add(db_user)
+     db.commit()
+     db.refresh(db_user)
+     return db_user
+
+#token/login endpoint
+@router.post("/token")
+async def login_access_token(
+     form_data : OAuth2PasswordRequestForm = Depends(),
+     db : Session = Depends(get_db)
+):
+     user = db.query(models.User).filter(
+          models.User.username == form_data.username
+     ).first()
+
+     if not user or not security.verify_password(
+          form_data.password,
+          user.hashed_pw
+     ):
+          raise HTTPException(
+               status_code=401,
+               detail="Incorrect username or password",
+               headers={"WWW_Authenticate"L "Bearer"},
+          )
+     
+     access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXP)
+     access_token = security.create_access_token(
+          data={"sub" : user.username},
+          expires_delta=access_token_expires
+     )
+     return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+     
+     
+
+     

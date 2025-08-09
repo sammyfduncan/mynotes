@@ -25,3 +25,13 @@ class Notes(BaseModel):
     #enable ORM mode 
     class Config:
         orm_mode = True
+
+#user auth
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_pw = Column(String)
+    
+    
