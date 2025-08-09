@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordBearer
 from . import models, schemas
 from .database import get_db
@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 #configuration
-SECRET_KEY = "asjbjfbiugsdfdsjgn"
+SECRET_KEY = "43f013e8bdc43807ba9f2b3bb0c67947fa45ab95c6d8434b167318db8750ba30"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXP = 30 #minutes
 
@@ -60,6 +60,40 @@ def get_current_user(
         token_data = schemas.TokenData(username=username)
     except JWTError:
         raise credentials_exception
+    
+#optional authentication dependency function
+#allows upload endpoint to accept requests from both guest and users
+async def current_user_optional(
+        db : Session = Depends(get_db),
+        authorization : Optional[str] = Header(None)
+) -> Optional[models.User]:
+    if not authorization:
+        return None
+    try:
+        scheme = authorization.split()
+        token = authorization.split()
+
+        if (scheme.lower() != "bearer"):
+            return None
+    except ValueError:
+        return None
+    
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+        username : str = payload.get("sub")
+
+        if username is None:
+            return None
+        user = db.query(
+            models.User).filter(
+                models.User.username == username).first()
+        return user
+    except JWTError:
+        return None #token invalid, so guest
     
 
     

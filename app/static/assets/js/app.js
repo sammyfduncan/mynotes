@@ -27,6 +27,19 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('file', file);
             formData.append('note_style', styleSelected);
 
+            //headers for authentication or guest tracking
+            const headers = new Headers();
+            //store auth token here after login
+            const authToken = localStorage.getItem('authToken');
+            const guestId = localStorage.getItem('guestId');
+
+            if (authToken) {
+                headers.append('Authorisation', `Bearer ${authToken}`);
+            } else if (guestId) {
+                //use custom header for guest id 
+                headers.append('Guest-Id', guestId);
+            }
+
             // Update UI to show processing has started
             if(uploadSpinner) uploadSpinner.classList.remove('d-none');
             submitFileButton.disabled = true;
@@ -35,21 +48,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // upload fetch call
             fetch('/upload/', {
-                method: 'POST',
-                body: formData,
+            method: 'POST',
+            headers: headers, // Use the headers we just prepared
+            body: formData,
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 403) { // 403 Forbidden
+                    throw new Error('Guest limit reached');
+                }
+                if (!response.ok) {
+                    // Catches 500 errors and other issues
+                    throw new Error('Upload failed');
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Upload successful, start status check for ID', data.content_id);
-                // start polling 
+                
+                // If the server sent back a new guest_id, store it
+                if (data.guest_id) {
+                    localStorage.setItem('guestId', data.guest_id);
+                    console.log('New guest ID stored:', data.guest_id);
+                }
+                
+                // Start polling for results
                 checkStatus(data.content_id);
             })
             .catch(error => {
                 console.error('Error during initial upload:', error);
-                displayUploadError('The initial file upload failed. Please try again.');
+                if (error.message === 'Guest limit reached') {
+                    displayUploadError('You have used your one free note. Please create an account to generate more.');
+                } else {
+                    displayUploadError('The initial file upload failed. Please try again.');
+                }
             });
         });
-//
+        
+        //checking status
         function checkStatus(id) {
             fetch(`/api/results/${id}`)
             .then(response => {

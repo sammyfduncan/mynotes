@@ -1,15 +1,28 @@
-from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Form
+from fileinput import filename
+from tkinter import N
+from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from app import database, models, utils, schemas, security
+from typing import Optional
+from .database import get_db
+from .models import Content, Notes, User
+from .utils import process_content
+from .security import get_current_user
+from . import schemas
 import uuid, shutil
 #defines API routes 
 
 router = APIRouter()
 MAX_SIZE = 10 * 1024 * 1024
+
+#dependency to read guest ID from custom header
+async def guest_id_optional(
+          guest_id : Optional[str] = Header(None)
+) -> Optional[str]:
+     return guest_id
 
 #uploading content 
 @router.post("/upload/")
@@ -17,7 +30,9 @@ async def upload_file(
     background_tasks : BackgroundTasks,
     file : UploadFile = File(...),
     note_style : str = Form("default"),
-    db : Session = Depends(get_db)
+    db : Session = Depends(get_db),
+    current_user : Optional[User] = Depends(get_current_user),
+    guest_id : Optional[str] = Depends(guest_id_optional)
     ):
         #check size
         file.file.seek(0, 2)
@@ -39,8 +54,34 @@ async def upload_file(
         with open(file_path, "wb") as file_obj:
              shutil.copyfileobj(file.file, file_obj)
 
+        owner_id = None
+        new_guest_id = None
+
+        if current_user:
+             #user logged in
+             owner_id = current_user.id
+        else:
+             #guest
+             if guest_id:
+                  #check if used first upload
+                  existing_note = db.query(Content).filter(
+                       Content.guest_session_id == guest_id
+                  ).first()
+                  if existing_note:
+                       raise HTTPException(
+                            status_code=403,
+                            detail="Guest limit reached, login to create more notes"
+                       )
+                  new_guest_id = str(uuid.uuid4())
+
         #create database record 
-        content = Content()
+        content = Content(
+             filename=file.filename,
+             file_path=str(file_path),
+             style=note_style,
+             owner_id=owner_id, #assosciate w/ current user
+             guest_session_id=new_guest_id
+        )
         content.filename = file.filename
         content.file_path = str(file_path)
         content.style = note_style
@@ -51,18 +92,22 @@ async def upload_file(
 
         background_tasks.add_task(process_content, content.id)
 
-        return {"message": f"Processing {file.filename}...", "content_id": content.id}
-
+        response_data = {"message": f"Processing {file.filename}...", "content_id": content.id}
+        if new_guest_id:
+          response_data["guest_id"] = new_guest_id
+     
+        return response_data
 #endpoint for receiving processed notes 
 @router.get("/api/results/{content_id}", response_model=Notes)
 async def receive_notes(
     content_id : int, 
-    db : Session = Depends(get_db)
+    db : Session = Depends(get_db),
+    current_user : User = Depends(security.get_current_user)
 ):
     #retrieve the record 
     record = db.query(Content).filter(Content.id == content_id).first()
     if not record:
-        raise HTTPException(status_code=404, detail="Note not found")
+        raise HTTPException(status_code=404, detail="Note not found, or you do not have permission to view it")
 
     #check status and return accordingly 
     if record.status == "complete":
@@ -105,18 +150,14 @@ async def new_user(
      user : schemas.CreateUser,
      db : Session = Depends(get_db)
 ):
-     db_user = db.query(models.User).filter(
-          models.User.username == user.username
-     ).first()
+     db_user = db.query(User).filter(User.username == user.username).first()
 
      if (db_user):
           raise HTTPException(status_code=400, detail="Username already registered")
      
      hashed_pw = security.get_pw_hash(user.password)
-     db_user = models.User(
-          username=user.username,
-          hashed_pw = hashed_pw
-     )
+     
+     db_user = User(username=user.username, hashed_pw=hashed_pw)
      db.add(db_user)
      db.commit()
      db.refresh(db_user)
@@ -139,9 +180,10 @@ async def login_access_token(
           raise HTTPException(
                status_code=401,
                detail="Incorrect username or password",
-               headers={"WWW_Authenticate"L "Bearer"},
+               headers={"WWW_Authenticate" : "Bearer"},
           )
      
+     #access token expiry logic 
      access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXP)
      access_token = security.create_access_token(
           data={"sub" : user.username},
@@ -149,9 +191,5 @@ async def login_access_token(
      )
      return {"access_token": access_token, "token_type": "bearer"}
 
-
-
-     
-     
 
      
