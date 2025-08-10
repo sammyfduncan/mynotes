@@ -16,3 +16,12 @@ class UserCheck(BaseModel):
     class Config:
         orm_mode = True
 
+#for user response that doesnt include pw field
+class UserOut(BaseModel):
+    id : int
+    username : str
+
+    class Config:
+        from_attributes = True
+
+

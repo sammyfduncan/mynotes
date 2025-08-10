@@ -1,6 +1,6 @@
 from fileinput import filename
 from tkinter import N
-from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header
+from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
@@ -10,12 +10,14 @@ from typing import Optional
 from .database import get_db
 from .models import Content, Notes, User
 from .utils import process_content
-from .security import get_current_user
-from . import schemas
+from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, ACCESS_TOKEN_EXP
+from .schemas import CreateUser, UserCheck
 import uuid, shutil
-#defines API routes 
 
+
+#defines API routes 
 router = APIRouter()
+#max file upload size in MB
 MAX_SIZE = 10 * 1024 * 1024
 
 #dependency to read guest ID from custom header
@@ -102,7 +104,9 @@ async def upload_file(
 async def receive_notes(
     content_id : int, 
     db : Session = Depends(get_db),
-    current_user : User = Depends(security.get_current_user)
+    #use optional dependencies
+    current_user : User = Depends(get_current_user),
+    guest_id : Optional[str] = Depends(guest_id_optional)
 ):
     #retrieve the record 
     record = db.query(Content).filter(Content.id == content_id).first()
@@ -119,8 +123,8 @@ async def receive_notes(
         #505 internal server error
         raise HTTPException(status_code=500, detail="Failed to process")
 
-#endpoints for serving HTML
 
+#endpoints for serving HTML
 @router.get("/", response_class=FileResponse)
 async def serve_index():
      return "app/static/index.html"
@@ -145,9 +149,9 @@ async def download_note(content_id : int, db : Session = Depends(get_db)):
      )
 
 #user registration endpoint
-@router.post("/users/", response_model=schemas.UserCheck)
+@router.post("/users/", response_model=UserCheck)
 async def new_user(
-     user : schemas.CreateUser,
+     user : CreateUser,
      db : Session = Depends(get_db)
 ):
      db_user = db.query(User).filter(User.username == user.username).first()
@@ -155,12 +159,13 @@ async def new_user(
      if (db_user):
           raise HTTPException(status_code=400, detail="Username already registered")
      
-     hashed_pw = security.get_pw_hash(user.password)
+     hashed_pw = get_pw_hash(user.password)
      
      db_user = User(username=user.username, hashed_pw=hashed_pw)
      db.add(db_user)
      db.commit()
      db.refresh(db_user)
+
      return db_user
 
 #token/login endpoint
@@ -169,11 +174,11 @@ async def login_access_token(
      form_data : OAuth2PasswordRequestForm = Depends(),
      db : Session = Depends(get_db)
 ):
-     user = db.query(models.User).filter(
-          models.User.username == form_data.username
+     user = db.query(User).filter(
+          User.username == form_data.username
      ).first()
 
-     if not user or not security.verify_password(
+     if not user or not verify_password(
           form_data.password,
           user.hashed_pw
      ):
@@ -184,10 +189,10 @@ async def login_access_token(
           )
      
      #access token expiry logic 
-     access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXP)
-     access_token = security.create_access_token(
+     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXP)
+     access_token = create_acc_token(
           data={"sub" : user.username},
-          expires_delta=access_token_expires
+          expiry_delta=access_token_expires
      )
      return {"access_token": access_token, "token_type": "bearer"}
 
