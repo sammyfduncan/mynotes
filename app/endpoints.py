@@ -14,6 +14,8 @@ from .security import get_current_user, verify_password, create_acc_token, get_p
 from .schemas import CreateUser, UserCheck
 import uuid, shutil
 
+from app import security
+
 
 #defines API routes 
 router = APIRouter()
@@ -138,14 +140,33 @@ async def serve_results():
      return "app/static/results.html"
 
 @router.get("/download/{content_id}")
-async def download_note(content_id : int, db : Session = Depends(get_db)):
-     record = db.query(Content).filter(Content.id == content_id).first()
-     if not record or not record.note_file_path:
-          raise HTTPException(status_code=404, detail="File not found")
-     return FileResponse(
-          path=record.note_file_path,
-          filename=f"notes_{record.filename}.md",
-          media_type='text/markdown'
+async def download_note(
+     content_id : int,
+     db : Session = Depends(get_db),
+     #optional dependencies to allow guests to download
+     current_user : Optional[User] = Depends(security.current_user_optional),
+     guest_id : Optional[str] = Depends(guest_id_optional)
+     ):
+          record = db.query(Content).filter(Content.id == content_id).first()
+          
+          if not record or not record.note_file_path:
+               raise HTTPException(status_code=404, detail="File not found")
+          
+          #check for ownershup or valid guest session
+          is_owner = current_user and record.owner_id == current_user.id
+          is_guest = record.guest_session_id and record.guest_session_id == guest_id
+
+          #check permission to download
+          if not is_owner and not is_guest:
+               raise HTTPException(
+                    status_code=403,
+                    detail="You've reached your guest download limit.\n"
+               )
+
+          return FileResponse(
+               path=record.note_file_path,
+               filename=f"notes_{record.filename}.md",
+               media_type='text/markdown'
      )
 
 #user registration endpoint
