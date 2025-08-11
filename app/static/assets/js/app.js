@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // for upload.html
+    // logic for upload.html
     const submitFileButton = document.getElementById('file_submit');
     if (submitFileButton) {
         const uploadFileInput = document.getElementById('upload-form');
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitFileButton.disabled = true;
             submitFileButton.textContent = 'Processing...';
             statusText.textContent = 'Uploading your file...';
-
+            
             // upload fetch call
             fetch('/upload/', {
             method: 'POST',
@@ -86,7 +86,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         //checking status
         function checkStatus(id) {
-            fetch(`/api/results/${id}`)
+
+            //header preparation
+            const headers = new Headers();
+            const authToken = localStorage.getItem('authToken');
+            const guestId = localStorage.getItem('guestId');
+
+            if (authToken) {
+                headers.append('Authorisation', `Bearer ${authToken}`);
+            } else if (guestId) {
+                headers.append('Guest-Id', guestId);
+            }
+
+            fetch(`/api/results/${id}`, { headers : headers })
             .then(response => {
                 if (response.status === 200) { // complete
                     //get JSON
@@ -127,14 +139,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- LOGIC FOR RESULTS.HTML ---
+    // logic for results.html
     const notesContainer = document.getElementById('result-container');
     if (notesContainer) {
         const urlParams = new URLSearchParams(window.location.search);
         const contentId = urlParams.get('id');
 
+        //headers preperation
+        const headers = new Headers();
+        const authToken = localStorage.getItem('authToken');
+        const guestId = localStorage.getItem('guestId');
+
+        if (authToken) {
+            headers.append('Authorisation', `Bearer ${authToken}`);
+        } else if (guestId) {
+            headers.append('Guest-Id', guestId);
+        }
+
         // fetch results from the API
-        fetch(`/api/results/${contentId}`)
+        fetch(`/api/results/${contentId}`, { headers : headers })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -161,8 +184,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // download button visible 
             downloadButton.classList.remove('d-none');
+            //download button logic
             downloadButton.addEventListener('click', function() {
-                window.location.href = `/download/${data.id}`;
+                // reprepare headers for download
+                const downloadHeaders = new Headers();
+                const authToken = localStorage.getItem('authToken');
+                const guestId = localStorage.getItem('guestId');
+
+                if (authToken) {
+                    downloadHeaders.append('Authorisation', `Bearer ${authToken}`);
+                } else if (guestId) {
+                    downloadHeaders.append('Guest-Id', guestId);
+                }
+                //fetch call w/ headers
+                fetch(`/download/${data.id}`, { headers: downloadHeaders })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Download failed');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = `notes_${data.filename}.md`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    })
+                    .catch(() => alert('Could not download file.'));
             });
         }
         
