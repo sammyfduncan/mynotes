@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
 
-<body class="d-flex min-vh-100 flex-column">
+<body>
     <nav class="navbar navbar-expand-md bg-body py-3">
         <div class="container"><a class="navbar-brand d-flex align-items-center" href="#"><span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
                         <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
@@ -28,42 +28,44 @@
             </div>
         </div>
     </nav>
-    <div class="container text-center flex-grow-1 py-3">
-        <h2>Turn your lectures into study notes in seconds.</h2>
-        <p class="lead d-flex justify-content-center align-items-end pt-4" style="display: inline;transform: perspective(0px) scale(1.04);font-weight: bold;padding: 5px;width: initial;text-align: center;margin-left: 5px;margin-right: 5px;border-color: rgb(72,87,133);opacity: 1;filter: brightness(93%) saturate(99%);font-size: 18px;"><strong>Upload your lecture slides, and our tool will create concise, insightful and organised notes.&nbsp;</strong></p>
-        <div class="row text-center justify-content-center">
-            <div class="col">
-                <div></div>
-            </div>
-            <div class="col text-center"><a class="btn btn-primary btn-lg flex-column mt-1 pt-4 mx-10" role="button" style="color: var(--bs-secondary);background: rgb(55,141,252);padding: 24px 24px;width: 350px;text-align: center;margin: 8px;height: 75px;position: relative;display: block;font-weight: bold;font-size: 22px;" href="upload.html">Try it for yourself</a></div>
-            <div class="col">
-                <div></div>
-            </div>
-        </div>
-        <h5 class="fw-semibold text-center pt-5">How does it work?</h5>
-    </div>
-    <div class="container d-flex gap-2 pt-0 pb-3" style="min-height: 40vh;">
-        <div class="col bg-primary">
-            <div class="card">
-                <div class="card-body text-secondary bg-primary">
-                    <h4 class="fw-bolder d-flex justify-content-center card-title">Upload</h4>
-                    <p class="fw-semibold card-text">Upload any form of lecture content. Our system accepts standard formats like PDF and PowerPoint.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col bg-primary">
-            <div class="card">
-                <div class="card-body text-secondary bg-primary mt-0 pt-2 mb-0 pb-2">
-                    <h4 class="fw-bolder d-flex justify-content-center pt-3 mb-2 card-title">Process</h4>
-                    <p class="fw-semibold card-text">Assisted with the use of generative AI, notes are compiled. Our systems identify the connections and hierarchy in your lectures to build true understanding.&nbsp;</p>
-                </div>
-            </div>
-        </div>
-        <div class="col bg-primary">
-            <div class="card">
-                <div class="card-body text-secondary bg-primary">
-                    <h4 class="fw-bolder d-flex justify-content-center card-title">Download</h4>
-                    <p class="fw-semibold card-text">Your notes are promptly delivered, ready for any device. Efficient studying has never been this accessible.&nbsp;</p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <div class="card mt-5 mb-5">
+                    <div class="card-body">
+                        <section class="position-relative py-4 py-xl-5">
+                            <div class="container">
+                                <div class="row mb-5">
+                                    <div class="col-md-8 col-xl-6 text-center mx-auto">
+                                        <h2 class="fw-bold text-primary">Create a new account</h2>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center ps-0">
+                                    <div class="col-12 col-md-6 col-xl-4 ms-0 ps-0 me-0 pe-0">
+                                        <div class="card mb-5">
+                                            <div class="card-body d-flex flex-column align-items-center ms-0 ps-0 pe-0 pt-0 mb-0 pb-0">
+                                                <div class="bs-icon-xl bs-icon-circle bs-icon-primary my-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
+                                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664z"></path>
+                                                    </svg></div>
+                                                <form class="text-center" method="post">
+                                                    <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email"></div>
+                                                    <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
+                                                    <div class="mb-3"><button class="btn btn-primary text-bg-primary w-100 mt-4 d-block" type="submit" style="background: var(--bs-primary);">Register</button>
+                                                        <p>Already have an account? Log in here</p>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-12 col-md-6 col-xl-4 ms-0 ps-0 pe-0">
+                                        <div class="card mb-5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,4 +100,8 @@
     </footer>
     <script src="assets/bootstrap/js/bootstrap.min.js" defer></script>
     <script src="assets/js/app.js" defer></script>
+    <script src="assets/js/register.js" defer></script>
+  
+</body>
+
 </html>
