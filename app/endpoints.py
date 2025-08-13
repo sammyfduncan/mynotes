@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, List
 from .database import get_db
 from .models import Content, Notes, User
 from .utils import process_content
@@ -139,6 +139,18 @@ async def serve_upload():
 async def serve_results():
      return "app/static/results.html"
 
+#endpoint for dashboard to get notes belonging to user
+@router.get("/api/dashboard/", response_model=List[Notes])
+async def get_user_notes(
+     db : Session = Depends(get_db),
+     current_user : User = Depends(get_current_user)     
+):
+     notes = db.query(Content).filter(
+          Content.owner_id == current_user.id
+          ).all()
+     return notes      
+     
+     
 @router.get("/download/{content_id}")
 async def download_note(
      content_id : int,

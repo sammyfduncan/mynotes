@@ -6,19 +6,8 @@ if (notesContainer) {
     const urlParams = new URLSearchParams(window.location.search);
     const contentId = urlParams.get('id');
 
-    //headers preperation
-    const headers = new Headers();
-    const authToken = localStorage.getItem('authToken');
-    const guestId = localStorage.getItem('guestId');
-
-    if (authToken) {
-        headers.append('Authorisation', `Bearer ${authToken}`);
-    } else if (guestId) {
-        headers.append('Guest-Id', guestId);
-    }
-
     // fetch results from the API
-    fetch(`/api/results/${contentId}`, { headers : headers })
+    fetch(`/api/results/${contentId}`, { headers : headers = getApiHeaders()})
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
