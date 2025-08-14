@@ -37,7 +37,7 @@ if (submitFileButton) {
             headers.append('Authorisation', `Bearer ${authToken}`);
         } else if (guestId) {
             //use custom header for guest id 
-            headers.append('Guest-Id', guestId);
+            headers.append('X-Guest-Id', guestId);
         }
 
         // Update UI to show processing has started

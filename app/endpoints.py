@@ -24,9 +24,9 @@ MAX_SIZE = 10 * 1024 * 1024
 
 #dependency to read guest ID from custom header
 async def guest_id_optional(
-          guest_id : Optional[str] = Header(None)
+          x_guest_id : Optional[str] = Header(None, alias="X-Guest-Id")
 ) -> Optional[str]:
-     return guest_id
+     return x_guest_id
 
 #uploading content 
 @router.post("/upload/")
@@ -106,7 +106,7 @@ async def receive_notes(
     content_id : int, 
     db : Session = Depends(get_db),
     #use optional dependencies
-    current_user : User = Depends(get_current_user),
+    current_user : Optional[User] = Depends(current_user_optional),
     guest_id : Optional[str] = Depends(guest_id_optional)
 ):
     #retrieve the record 

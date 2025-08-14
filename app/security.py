@@ -70,8 +70,7 @@ async def current_user_optional(
     if not authorization:
         return None
     try:
-        scheme = authorization.split()
-        token = authorization.split()
+        scheme, token = authorization.split()
 
         if (scheme.lower() != "bearer"):
             return None
