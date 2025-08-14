@@ -95,7 +95,10 @@ async def current_user_optional(
     except JWTError:
         return None #token invalid, so guest
     
-
+async def guest_id_optional(
+    guest_id : Optional[str] = Header(None)
+) -> Optional[str]:
+    return guest_id
     
 
 

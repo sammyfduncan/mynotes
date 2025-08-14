@@ -10,7 +10,7 @@ from typing import Optional, List
 from .database import get_db
 from .models import Content, Notes, User
 from .utils import process_content
-from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, ACCESS_TOKEN_EXP
+from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, current_user_optional, guest_id_optional, ACCESS_TOKEN_EXP
 from .schemas import CreateUser, UserCheck
 import uuid, shutil
 
@@ -35,7 +35,7 @@ async def upload_file(
     file : UploadFile = File(...),
     note_style : str = Form("default"),
     db : Session = Depends(get_db),
-    current_user : Optional[User] = Depends(get_current_user),
+    current_user : Optional[User] = Depends(current_user_optional),
     guest_id : Optional[str] = Depends(guest_id_optional)
     ):
         #check size
@@ -59,24 +59,26 @@ async def upload_file(
              shutil.copyfileobj(file.file, file_obj)
 
         owner_id = None
-        new_guest_id = None
-
         if current_user:
              #user logged in
              owner_id = current_user.id
         else:
              #guest
-             if guest_id:
-                  #check if used first upload
-                  existing_note = db.query(Content).filter(
-                       Content.guest_session_id == guest_id
-                  ).first()
-                  if existing_note:
-                       raise HTTPException(
-                            status_code=403,
-                            detail="Guest limit reached, login to create more notes"
-                       )
-                  new_guest_id = str(uuid.uuid4())
+               if not guest_id:
+                    raise HTTPException(
+                    status_code=400,
+                    detail="guest ID missing"
+                    )
+               
+               existing_note = db.query(Content).filter(
+                    Content.guest_session_id == guest_id
+               ).first()
+
+               if existing_note:
+                    raise HTTPException(
+                         status_code=403,
+                         detail="Guest limit reached, login to create more notes"
+                    )
 
         #create database record 
         content = Content(
@@ -84,12 +86,9 @@ async def upload_file(
              file_path=str(file_path),
              style=note_style,
              owner_id=owner_id, #assosciate w/ current user
-             guest_session_id=new_guest_id
+             guest_session_id=guest_id if not current_user else None
         )
-        content.filename = file.filename
-        content.file_path = str(file_path)
-        content.style = note_style
-
+        
         db.add(content)
         db.commit()
         db.refresh(content)
@@ -97,10 +96,10 @@ async def upload_file(
         background_tasks.add_task(process_content, content.id)
 
         response_data = {"message": f"Processing {file.filename}...", "content_id": content.id}
-        if new_guest_id:
-          response_data["guest_id"] = new_guest_id
-     
+        
         return response_data
+
+
 #endpoint for receiving processed notes 
 @router.get("/api/results/{content_id}", response_model=Notes)
 async def receive_notes(
