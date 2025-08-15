@@ -44,7 +44,7 @@ if (notesContainer) {
             if (authToken) {
                 downloadHeaders.append('Authorisation', `Bearer ${authToken}`);
             } else if (guestId) {
-                downloadHeaders.append('Guest-Id', guestId);
+                downloadHeaders.append('X-Guest-Id', guestId);
             }
             //fetch call w/ headers
             fetch(`/download/${data.id}`, { headers: downloadHeaders })
