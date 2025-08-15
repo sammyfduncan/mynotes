@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from .database import Base
 #defines models 
@@ -15,6 +16,11 @@ class Content(Base):
     note_file_path = Column(String)
     status = Column(String, default="processing")
     style = Column(String, default="default")
+    #represents owner of the note
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    guest_session_id = Column(String, unique=True, index=True, nullable=True)
+    #link back to the user model
+    owner = relationship("User")
 
 #api response model for generated notes 
 class Notes(BaseModel):
@@ -24,4 +30,14 @@ class Notes(BaseModel):
 
     #enable ORM mode 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+#user auth
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_pw = Column(String)
+    
+    
