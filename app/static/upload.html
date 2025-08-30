@@ -28,16 +28,30 @@
             </div>
         </div>
     </nav>
-    <div class="container-fluid text-center ms-0 ps-0 me-5 pe-0 pt-0 mb-0 pb-8" id="result-container">
-        <div class="card pb-0"><div class="card-body pt-10 mb-0 pb-10">
-    <pre class="pt-0">
-        <code id="notes-preview">loading notes preview...</code>
-        </pre>
-</div>
-            <h2 class="fw-semibold text-primary mt-0 pt-0 pb-0" id="filename-display">Loading filename</h2>
+    <div class="container-fluid text-center d-flex flex-grow-1 justify-content-start px-8 py-3">
+        <div class="col col-lg-6 offset-lg-0 h-100">
+            <div class="card">
+                <div class="card-body flex-grow-1 flex-shrink-0 flex-fill mb-0 pb-10">
+                    <h3 class="fw-bold text-primary card-title">Upload your lectures here</h3>
+                    <p class="text-primary mt-5 card-text">Simply upload your lecture content, and let us do the rest.&nbsp;</p>
+                    <div class="mt-0 pt-0 mb-0 pb-0"></div>
+                    <h6 class="fw-bold text-primary mt-7 pt-0 mb-3 pb-0">What does each style do?</h6>
+                    <p class="text-primary mt-5 mb-0 card-text" style="font-size: 14px;">Standard:&nbsp;<br>This style offers a balanced and well-structured summary of your lecture material, capturing key topics, definitions, and important examples. It's ideal for general review and understanding core concepts.<br><br></p>
+                </div>
+            </div>
         </div>
-        <div class="row">
-            <div class="col"><button class="btn btn-primary btn-lg text-bg-primary d-none mt-5 mb-0" id="download-btn" type="button">Button</button></div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body mt-6"><input class="form-control-sm ps-0 pe-0 mt-4 pt-0 mb-0 pb-0 mx-0" type="file" id="upload-form"><small class="form-text fw-light text-center d-block p-0 mt-0 pt-0 mb-3 pb-3" style="font-size: 12px;">Note that only .pdf and .pptx file formats are supported.</small>
+                    <div class="mt-3 pt-0 mb-0 pb-0"><small class="fw-semibold text-center text-primary ms-0 me-0 mt-0 pt-0 mb-0 pb-0">Now choose your style.&nbsp;</small></div>
+                    <div class="btn-group btn-group-sm mt-2 pt-0 mb-0 pb-0" role="group" id="style-selector"><button class="btn btn-primary active" id="default" type="button" value="default">Standard</button><button class="btn btn-primary" id="concise" type="button" value="concise">Concise</button><button class="btn btn-primary" id="detailed" type="button" value="detailed">Detailed</button></div><button class="btn btn-primary btn-sm text-bg-primary ms-6 me-6 mt-5 pt-2 mb-0 pb-0 px-4" id="file_submit" type="button">Generate Notes</button><span class="spinner-border d-none" role="status" id="upload-spinner"></span>
+                    <div class="mb-0 pb-4">
+                        <p class="text-primary" id="upload-status-text"></p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-primary mt-4 pt-0 mb-0 pb-0" style="font-size: 14px;">Concise:&nbsp;<br>Designed for rapid review, the Concise style extracts only the most critical information. It presents key terms and main ideas in a brief, scannable format, perfect for last-minute revision or creating flashcards.<br><br></p>
+            <p class="text-primary mt-4 mb-0" style="font-size: 14px;">Detailed:&nbsp;<br>This style creates a comprehensive set of notes by expanding on slide content with fuller explanations and more context. Use this for in-depth subject learning or as a complete reference document.<br><br></p>
         </div>
     </div>
     <footer class="text-center bg-body mt-auto py-2">
@@ -70,7 +84,7 @@
     </footer>
     <script src="/static/assets/bootstrap/js/bootstrap.min.js" defer></script>
     <script src="/static/assets/js/app.js" defer></script>
-    <script src="/static/assets/js/results.js" defer></script>
+    <script src="/static/assets/js/upload.js" defer></script>
 </body>
 
 </html>

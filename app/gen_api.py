@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+#key
+GOOGLE_API_KEY = "AIzaSyDx7IZbHyCl9T5xL1OlQUFRN0HlcAYWg58"
+
 #hardcoded prompts based on user choice 
 PROMPTS = {
     "default" : "Generate well-rounded, informative study notes based on these lecture slides.",
@@ -14,7 +17,7 @@ PROMPTS = {
 
 def gen_notes(file_path : str, style : str) -> str:
     #links api key in .env
-    generativeai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+    generativeai.configure(api_key=GOOGLE_API_KEY)
     
     #uploads file to google server
     uploaded_file = generativeai.upload_file(path=file_path)

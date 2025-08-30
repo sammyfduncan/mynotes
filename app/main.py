@@ -18,7 +18,7 @@ Base.metadata.create_all(bind=engine)
 #configuration to serve static html
 app.mount(
     "/static",
-    StaticFiles(directory="app/static"),
+    StaticFiles(directory="app/static/"),
     name="static"
 )
 

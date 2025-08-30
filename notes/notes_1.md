@@ -1,78 +1,162 @@
-Okay, here are well-rounded, informative study notes based on the provided lecture slides:
+Okay, here are well-rounded, informative study notes based on the provided lecture slides.
 
-**Course Overview: SCC.111 Software Development**
+**SCC.111 Software Development – Lecture 4: Functions & Flow**
 
-*   **Instructors:** Adrian Friday, Nigel Davies, Hansi Hettiarachchi, Saad Ezzini
-*   **Core Skill:** Software development is emphasized as a fundamental skill with wide applications.
-*   **Course Value:** It's essential for many future career paths, will reduce overall coursework burden in the future, and can be enjoyable.
-*   **Course Objective:** More than "just a programming course". It aims to instil a principled approach to programming, focusing on imperative programming, the software development lifecycle, and relevant tools and techniques.
-*   **Perspective:** Programming is presented not just as a technical skill but as a creative tool.
+**I. Overview**
 
-**Course Structure & Teaching**
+*   This lecture focuses on expanding our understanding of code flow by introducing functions.  Specifically, it covers:
+    *   How code flows.
+    *   How to and when to declare our own functions.
+    *   How data flows through functions (parameter passing).
+    *   How function calls change program flow.
 
-*   **Lectures:** There are two lectures per week (repeated once).
-*   **Practicals:** Attending the assigned practical class is mandatory.  Additional practical sessions are available if space allows.
-*   **Out-of-Class Work:** Students should anticipate needing to work outside of scheduled lab hours. The Moodle forum should be used to get help.
-*   **Timetables:** Timetables for both majors and minors are provided, specifying when practical sessions are scheduled in labs.
+**II. Code Flow: From Statements to Programs**
 
-**Assessment**
+*   Code flow occurs at different scales:
+    *   **Between Programs:** (Covered in later courses)
+    *   **Between Blocks of Code:** The focus of this lecture (Functions).
+    *   **Between Statements:** Covered in the previous lecture.
+    *   **Within Expressions:** Covered in the previous lecture.
 
-*   **Breakdown:** 70% exam, 30% coursework
-*   **Importance:** Coursework helps you pass the exam. The final exam is in the summer term and has high weighting.
-*   **Coursework Components:**
-    *   Online tests and programming activities (weeks 5, 10, 15, 20).
-    *   A more open-ended coding project (weeks 21-25).
-*   **Submission:** Coursework is submitted online. Plagiarism checks are conducted.
+**III. Problem Decomposition and Functions**
 
-**Learning Culture & Expectations**
+*   **Problem Decomposition:** We solve complex problems by breaking them down into a series of smaller, more manageable steps.  This process is often iterative (iterative refinement).
+*   **Functions Package Code:** It makes sense to package sets of statements into functional units to:
+    *   Encapsulate specific functionality.
+    *   Avoid repeating blocks of statements.
+    *   Make code easier to maintain and reuse (write less code, fewer places to change).
 
-*   **Experience Levels:** The class will have students with varying levels of prior experience.
-*   **No Panic:** If you have limited or no experience, that's OK! Don't feel pressured by others.
-*   **Advanced Students:** Those with more experience are encouraged to take on advanced exercises and assist their peers.
+**IV. Functions in C**
 
-**Academic Integrity**
+*   Most programming languages provide support for creating functions.
+*   **C allows us to:**
+    *   Define functions that package and name specific functionality.
+    *   Use libraries – sets of pre-compiled functions (defined by header files like `stdio.h`).
+    *   (Later) Bundle our own functions to create libraries.
 
-*   **Emphasis:** The course is designed for learning, and work submitted must be the student's own.
-*   **Prohibited Actions:**  Using AI, getting direct help from friends, family or online is not allowed. You must work on individual assignments alone.
-*   **Collaboration:** Discussion and learning from peers are encouraged, but the exchange of code or answers is strictly prohibited.
-*   **Plagiarism Detection:**  All submitted code is checked for plagiarism.
+**V. C Function Structure**
 
-**Feedback & Good Learning Practices**
+*   **General Form:**
 
-*   **Formative Assessment:** Weekly lab exercises provide detailed feedback.
-*   **Note-Taking:** Keeping written notes is recommended for reflection.
-*   **Summative Assessment:** Quizzes and a Project will make up the summative assessment for the course.
-    *   Quizzes are typically returned with marks within a week.
-    *   The project is due week 25, with marks returned within 4 weeks.
-*   **Extenuating Circumstances:** Contact the SCC Teaching Office (TO) if you have any issues.
+    ```c
+    return_type function_name(parameter_type parameter_name, ...) {
+        /* Function body: some lines of code */
+        return value; // If return_type is not void
+    }
+    ```
 
-**Instructor Expectations**
+    *   `return_type`:  The data type of the value returned by the function.
+        *   Must be a simple *arithmetic type* (e.g., `int`, `float`, `char`).
+        *   Can be `void` if the function does not return a value.
+    *   `function_name`:  The name of the function (used to call it).
+    *   `parameter-type-list`: A list of parameters, including their types, that the function accepts.
+        *   Can be empty if the function takes no parameters.
+    *   `compound-statement`:  The function body (enclosed in `{}`), containing the code to be executed when the function is called.
 
-*   **Integrity:** Honesty in your work is essential.
-*   **Stay Current:** Keep up-to-date with the course materials.
-*   **Attend:** Regularly attend lectures and practicals.
-*   **Textbook:** Acquire the textbook (available second-hand).
-*   **Ask Questions:** Don't hesitate to ask questions for clarification.  There are no silly questions.
-*   **Timely Work:** Start coursework when it is assigned.
+**VI. Code Examples: Beep!**
 
-**What is a Program?**
+*Example:*
+```c
+#include <stdio.h>
 
-*   **Definition:** A detailed plan or procedure for solving a problem with a computer. More specifically, "an unambiguous, ordered sequence of computational instructions necessary to achieve such a solution".
-*   **Algorithms:** A basic example algorithm is provided for counting people in a lecture hall. This involves linear time complexity.
-*   **Key Components of Program:** A step in the process, decision, and a program flow.
+void beep(int howManyTimes) {
+    for (int beeps = 0; beeps < howManyTimes; beeps++) {
+        printf("Beep!\n");
+        sleep(1);
+    }
+}
 
-**Imperative Programming**
+int main() {
+    beep(5);
+    return 0;
+}
+```
 
-*   **Definition:** A programming paradigm that uses statements to change a program's state.
-*   **Critical Thinking:** Think about what to represent (data) and how the program should manipulate it.
+**VII. `main()` Function**
 
-**The C Language**
+*   The `main()` function is the entry point of a C program.
+*   It takes no parameters. It returns a code to the shell.
+*   Strictly, `main` is: `int main(int argc, char *argv[])`
+    *   `argc` and `argv` are related to command line arguments.
 
-*   **Choice:** C is the first language you'll be learning in this course.
-*   **History:** Developed in the 1970s for building UNIX.
-*   **Characteristics:** It's compact, low-level, and used to generate fast, efficient code, still used a lot in current systems.
-*   **The "Tool Chain":** C is a "compiled language," you must use a text editor to write the code, a compiler to translate the code, and then run the executable.
-*   **Example:** A basic "Hello, world" program is provided.
-*   **Reference:** The book "The C Programming Language" by Kernighan and Ritchie is highly recommended and the definitive reference. Available online in the Library.
+**VIII. Function Declaration**
 
-These notes provide a structured summary of the key topics covered in the lecture. Good luck with your studies!
+*   You must *declare* a function before you *call* it in your code.
+* The compiler needs to 'see' a function declaration before it is called, this is done by placing the function defintion before the main function where it is called.
+*   The compiler will 'see' beep's declaration and can then 'call' it from within main
+
+**IX. Code Flow with Functions**
+
+1.  Execution starts in `main()`.
+2.  When `beep(5);` is encountered, the program jumps to the `beep()` function.
+3.  The code inside the `beep()` function is executed.
+4.  Once `beep()` finishes, execution returns to the next line in `main()` after the function call.
+
+**X. Data Flow and Parameter Passing**
+
+*   Data can be passed *into* functions through parameters.
+*   Example:
+
+```c
+int main() {
+    printf("Hello, world\n"); //"Hello, world\n" is data 'passed' into printf
+}
+```
+*   In the beep example, `howManyTimes` in `void beep(int howManyTimes)` becomes a variable within the `beep()` function, and the value passed (e.g., `5` in `beep(5);`) is assigned to this variable.
+
+**XI. Return Values**
+
+*   Functions can also return values back to the calling code.
+*Example:*
+
+```c
+int move_forward(int howManyTimes) {
+    while (howManyTimes > 0 && sense_obstacle() == 0) {
+        motor_on();
+        sleep(1);
+        motor_off();
+        howManyTimes--;
+    }
+    return howManyTimes == 0; // return TRUE if hit anything
+}
+
+int main() {
+    if (move_forward(5))
+        printf("Success!\n");
+    else
+        printf("Oh no!\n");
+    return 0;
+}
+```
+
+*   The function `move_forward` effectively 'evaluates' to the returned result (e.g., `TRUE` or `FALSE`), which is then used in the `if` statement.
+
+**XII. Function Declarations and Type Matching**
+
+*   A function declaration is like a 'socket' with a precise specification. You can only 'plug' into (call) it if your arguments match.
+
+**XIII. Formal vs. Actual Parameters**
+
+*   **Formal Parameters:** Declared in the function definition, specifying the type and name of each expected input.
+*   **Actual Parameters:** The values passed to the function when it is called.
+*   **Important:** The actual parameters must match the formal parameters in *both* type and position!
+
+```c
+float buy_coffees (int howMany, float cost) { ... } //Declaration
+
+float totalCost = buy_coffees(10, 4.50); // Call
+```
+
+**XIV. Pass by Value**
+
+*   In C, parameters are passed *by value*. This means that the function receives a *copy* of the actual parameter's value, not the original variable itself.
+*   Even if the formal and actual parameters have the same name, they are different variables residing in *different scopes*.
+
+**XV. Summary**
+
+*   **Key Concepts:**
+    *   Creating reusable sub-units of code called functions.
+    *   Programs flow into and out of functions.
+    *   Information (variables) is passed into and out of functions.
+
+These notes provide a comprehensive overview of the lecture, covering the key concepts related to functions and flow in C. Remember to supplement these notes with the actual code examples and practice exercises.

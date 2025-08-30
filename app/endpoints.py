@@ -1,5 +1,4 @@
 from fileinput import filename
-from tkinter import N
 from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -16,6 +15,7 @@ import uuid, shutil
 
 from app import security
 
+STATIC_DIR = Path(__file__).parent / "static"
 
 #defines API routes 
 router = APIRouter()
@@ -99,6 +99,31 @@ async def upload_file(
         
         return response_data
 
+#endpoints for serving HTML
+@router.get("/", response_class=FileResponse)
+async def serve_index():
+     return STATIC_DIR / "index.html"
+
+@router.get("/upload.html", response_class=FileResponse)
+async def serve_upload():
+     return STATIC_DIR / "upload.html"
+
+@router.get("/results.html", response_class=FileResponse)
+async def serve_results():
+     return STATIC_DIR / "results.html"
+
+@router.get("/login.html", response_class=FileResponse)
+async def serve_login():
+    return STATIC_DIR / "login.html"
+
+@router.get("/register.html", response_class=FileResponse)
+async def serve_register():
+    return STATIC_DIR / "register.html"
+
+@router.get("/dashboard.html", response_class=FileResponse)
+async def serve_dashboard():
+    return STATIC_DIR / "dashboard.html"
+
 
 #endpoint for receiving processed notes 
 @router.get("/api/results/{content_id}", response_model=Notes)
@@ -124,19 +149,6 @@ async def receive_notes(
         #505 internal server error
         raise HTTPException(status_code=500, detail="Failed to process")
 
-
-#endpoints for serving HTML
-@router.get("/", response_class=FileResponse)
-async def serve_index():
-     return "app/static/index.html"
-
-@router.get("/upload.html", response_class=FileResponse)
-async def serve_upload():
-     return "app/static/upload.html"
-
-@router.get("/results.html", response_class=FileResponse)
-async def serve_results():
-     return "app/static/results.html"
 
 #endpoint for dashboard to get notes belonging to user
 @router.get("/api/dashboard/", response_model=List[Notes])

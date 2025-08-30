@@ -31,6 +31,7 @@ if (notesContainer) {
         // update the content of the elements
         filenameDisplay.textContent = `Notes for: ${data.filename}`;
         notesPreview.textContent = data.notes;
+        downloadButton.textContent = 'Download';
 
         // download button visible 
         downloadButton.classList.remove('d-none');
