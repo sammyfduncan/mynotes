@@ -25,4 +25,3 @@ function getApiHeaders() {
     }
     return headers;
 }
-
