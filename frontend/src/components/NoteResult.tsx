@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { getNoteResult, downloadNote } from '../services/api';
 import ReactMarkdown from 'react-markdown';
+import { motion } from 'framer-motion';
 
 interface NoteResultProps {
   contentId: number;
@@ -51,7 +51,18 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
   if (loading) {
     return (
       <div className="text-center p-12">
-        <p className="text-lg">Processing your notes...</p>
+        <motion.p
+          className="text-lg"
+          animate={{
+            opacity: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+          }}
+        >
+          Processing your notes...
+        </motion.p>
       </div>
     );
   }
@@ -61,15 +72,23 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
   }
 
   return (
-    <div className="p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <motion.div 
+        className="p-8 bg-gray-100 dark:bg-gray-800 rounded-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+    >
       <h2 className="text-3xl font-bold mb-4">Your Notes</h2>
       <div className="prose dark:prose-invert max-w-none">
         <ReactMarkdown>{note.notes}</ReactMarkdown>
       </div>
-      <button onClick={handleDownload} className="mt-6 py-2 px-4 bg-electric-blue text-white font-bold rounded-lg">
+      <motion.button 
+        onClick={handleDownload} 
+        className="mt-6 py-2 px-4 bg-electric-blue text-white font-bold rounded-lg"
+        whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgb(0,123,255)" }}
+      >
         Download Note
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 

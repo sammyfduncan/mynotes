@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import FileUpload from '../components/FileUpload';
 import NoteResult from '../components/NoteResult';
@@ -18,21 +19,21 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-4">Get Your Lecture Notes Instantly</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400">Upload a file and let our AI do the rest.</p>
-      </div>
-
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center mb-4">Try it out now:</h2>
-        {error && <div className="bg-red-500 text-white p-4 rounded-lg mb-4">{error}</div>}
-        {contentId ? (
-          <NoteResult contentId={contentId} />
-        ) : (
-          <FileUpload onUploadSuccess={handleUploadSuccess} onError={handleError} />
-        )}
-      </div>
+    <div>
+      <section className="pt-16 flex flex-col items-center text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl font-bold mb-4">Get Your Lecture Notes Instantly</h1>
+          <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">Built for students. Upload your lecture slides and receive useful notes in your choice of style.</p>
+        </div>
+        <div className="w-full max-w-2xl mt-8">
+            {error && <div className="bg-red-500 text-white p-4 rounded-lg mb-4">{error}</div>}
+            {contentId ? (
+                <NoteResult contentId={contentId} />
+            ) : (
+                <FileUpload onUploadSuccess={handleUploadSuccess} onError={handleError} />
+            )}
+        </div>
+      </section>
 
       <HowItWorks />
     </div>
