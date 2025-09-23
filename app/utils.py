@@ -15,30 +15,36 @@ def process_content(content_id : int):
         if not record:
             return
 
-        #now call llm util function
-        note_str = gen_notes(
-            file_path=record.file_path,
-            style=record.style
-            )
+        try: 
+            #now call llm util function
+            note_str = gen_notes(
+                file_path=record.file_path,
+                style=record.style
+                )
         
-        if not note_str:
+            if not note_str:
+                record.status = "failed"
+                db.commit()
+                return
+
+            #call helper
+            note_path = save_notes(
+                notes_content=note_str,
+                content_id=record.id
+            )
+
+            #update record in memory
+            record.note_file_path = note_path
+            record.status = "complete"
+            record.notes = note_str
+
+        except Exception as e:
+            print(f"Failed to process {content_id}: {e}")
             record.status = "failed"
+
+        finally: 
+            #commit changes to db regardless of success
             db.commit()
-            return
-
-        #call helper
-        note_path = save_notes(
-            notes_content=note_str,
-            content_id=record.id
-        )
-
-        #update record in memory
-        record.note_file_path = note_path
-        record.status = "complete"
-        record.notes = note_str
-
-        #commit changes to db
-        db.commit()
 
  #helper to save notes file 
 def save_notes(

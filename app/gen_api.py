@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-#key
-GOOGLE_API_KEY = "AIzaSyDx7IZbHyCl9T5xL1OlQUFRN0HlcAYWg58"
+#get API key
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 
 #hardcoded prompts based on user choice 
 PROMPTS = {

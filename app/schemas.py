@@ -14,7 +14,7 @@ class UserCheck(BaseModel):
     hashed_pw : str 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 #for user response that doesnt include pw field
 class UserOut(BaseModel):
