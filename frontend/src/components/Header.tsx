@@ -1,26 +1,49 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import styled from 'styled-components';
+
+const HeaderContainer = styled.header`
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--primary-bg);
+  border-bottom: 1px solid var(--secondary-bg);
+`;
+
+const Logo = styled(Link)`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-text);
+  text-decoration: none;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  gap: 2rem;
+`;
+
+const NavLink = styled(Link)`
+  color: var(--secondary-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--primary-text);
+  }
+`;
 
 const Header: React.FC = () => {
   return (
-    <Navbar bg="custom" className="navbar-custom" expand="lg">
-      <Container>
-        <Navbar.Brand as={Link} to="/">MyNotes</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/about">About</Nav.Link>
-            <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
-          </Nav>
-          <Nav>
-            <Nav.Link as={Link} to="/login">Login</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+    <HeaderContainer>
+      <Logo to="/">MyNotes</Logo>
+      <Nav>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/dashboard">Dashboard</NavLink>
+        <NavLink to="/login">Login</NavLink>
+      </Nav>
+    </HeaderContainer>
   );
 };
 

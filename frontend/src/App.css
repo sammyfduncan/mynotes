@@ -1,16 +1,11 @@
+
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.navbar-custom {
-  background-color: #1e90ff; /* Deep sky blue */
-}
-
-.navbar-custom .navbar-brand,
-.navbar-custom .nav-link {
-  color: #fff;
-}
-
-.navbar-custom .nav-link:hover {
-  color: #f0f8ff; /* AliceBlue */
+.main-content {
+  flex: 1;
+  padding: 2rem;
 }

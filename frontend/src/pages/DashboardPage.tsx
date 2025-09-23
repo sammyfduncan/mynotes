@@ -1,7 +1,24 @@
+
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Spinner, Alert } from 'react-bootstrap';
 import { getUserNotes } from '../services/api';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+const DashboardContainer = styled.div`
+  .table {
+    background-color: var(--secondary-bg);
+    color: var(--primary-text);
+  }
+
+  .table thead th {
+    border-bottom: 2px solid var(--accent-color);
+  }
+
+  .table tbody tr:hover {
+    background-color: #3a3a3a;
+  }
+`;
 
 const DashboardPage: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -24,7 +41,7 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <Spinner animation="border" />;
+    return <Spinner animation="border" variant="primary" />;
   }
 
   if (error) {
@@ -32,9 +49,9 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <h2>Your Notes</h2>
-      <Table striped bordered hover responsive>
+    <DashboardContainer>
+      <h2 className="mb-4">Your Notes</h2>
+      <Table striped hover responsive variant="dark">
         <thead>
           <tr>
             <th>File Name</th>
@@ -58,7 +75,7 @@ const DashboardPage: React.FC = () => {
           ))}
         </tbody>
       </Table>
-    </div>
+    </DashboardContainer>
   );
 };
 

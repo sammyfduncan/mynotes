@@ -1,9 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner } from 'react-bootstrap';
 import { getNoteResult, downloadNote } from '../services/api';
 import ReactMarkdown from 'react-markdown';
+import styled from 'styled-components';
+
+const NotePageContainer = styled.div`
+  background-color: var(--secondary-bg);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2rem;
+`;
 
 const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +53,7 @@ const NotePage: React.FC = () => {
   };
 
   if (loading) {
-    return <Spinner animation="border" />;
+    return <Spinner animation="border" variant="primary" />;
   }
 
   if (error) {
@@ -54,15 +61,13 @@ const NotePage: React.FC = () => {
   }
 
   return (
-    <div className="mt-4">
+    <NotePageContainer>
       <h2>{note.filename}</h2>
-      <div className="p-3 border rounded">
-        <ReactMarkdown>{note.notes}</ReactMarkdown>
-      </div>
+      <ReactMarkdown>{note.notes}</ReactMarkdown>
       <Button variant="primary" onClick={handleDownload} className="mt-3">
         Download Note
       </Button>
-    </div>
+    </NotePageContainer>
   );
 };
 

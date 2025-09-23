@@ -1,8 +1,30 @@
-
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Spinner } from 'react-bootstrap';
+import { Button, Spinner, Alert } from 'react-bootstrap';
 import { getNoteResult, downloadNote } from '../services/api';
 import ReactMarkdown from 'react-markdown';
+import styled, { keyframes } from 'styled-components';
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const NoteContainer = styled.div`
+  animation: ${fadeIn} 0.5s ease-in-out;
+  background-color: var(--secondary-bg);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2rem;
+`;
+
+const LoadingContainer = styled.div`
+  text-align: center;
+  padding: 4rem;
+`;
 
 interface NoteResultProps {
   contentId: number;
@@ -51,12 +73,10 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
 
   if (loading) {
     return (
-      <div className="text-center">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-        <p>Processing your notes...</p>
-      </div>
+      <LoadingContainer>
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Processing your notes...</p>
+      </LoadingContainer>
     );
   }
 
@@ -65,15 +85,13 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
   }
 
   return (
-    <div className="mt-4">
+    <NoteContainer>
       <h2>Your Notes</h2>
-      <div className="p-3 border rounded">
-        <ReactMarkdown>{note.notes}</ReactMarkdown>
-      </div>
+      <ReactMarkdown>{note.notes}</ReactMarkdown>
       <Button variant="primary" onClick={handleDownload} className="mt-3">
         Download Note
       </Button>
-    </div>
+    </NoteContainer>
   );
 };
 

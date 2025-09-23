@@ -1,8 +1,22 @@
-
-import React, { useState } from 'react';
-import { Form, Button, Alert, Spinner } from 'react-bootstrap';
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import styled from 'styled-components';
+import { Form, Button, Spinner } from 'react-bootstrap';
 import { uploadFile } from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
+
+const DropzoneContainer = styled.div`
+  border: 2px dashed var(--secondary-text);
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+
+  &:hover {
+    border-color: var(--accent-color);
+  }
+`;
 
 interface FileUploadProps {
   onUploadSuccess: (contentId: number) => void;
@@ -14,15 +28,14 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError }) => 
   const [noteStyle, setNoteStyle] = useState<string>('default');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      onError(''); // Clear previous errors
-    } else {
-      setFile(null);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+      onError('');
     }
-  };
+  }, [onError]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleUpload = async () => {
     if (!file) {
@@ -46,38 +59,28 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError }) => 
 
   return (
     <div className="my-4">
-      <Form>
-        <Form.Group controlId="formFile" className="mb-3">
-          <Form.Label>Upload your lecture file (.pdf, .pptx)</Form.Label>
-          <Form.Control type="file" onChange={handleFileChange} />
-        </Form.Group>
+      <DropzoneContainer {...getRootProps()}>
+        <input {...getInputProps()} />
+        {
+          isDragActive ?
+            <p>Drop the files here ...</p> :
+            <p>Drag 'n' drop some files here, or click to select files</p>
+        }
+        {file && <p>Selected file: {file.name}</p>}
+      </DropzoneContainer>
 
-        <Form.Group controlId="noteStyle" className="mb-3">
-          <Form.Label>Note Style</Form.Label>
-          <Form.Select value={noteStyle} onChange={(e) => setNoteStyle(e.target.value)}>
-            <option value="default">Default</option>
-            <option value="concise">Concise</option>
-            <option value="detailed">Detailed</option>
-          </Form.Select>
-        </Form.Group>
+      <Form.Group controlId="noteStyle" className="my-3">
+        <Form.Label>Note Style</Form.Label>
+        <Form.Select value={noteStyle} onChange={(e) => setNoteStyle(e.target.value)}>
+          <option value="default">Default</option>
+          <option value="concise">Concise</option>
+          <option value="detailed">Detailed</option>
+        </Form.Select>
+      </Form.Group>
 
-        <Button variant="primary" onClick={handleUpload} disabled={loading}>
-          {loading ? (
-            <>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />
-              <span className="visually-hidden">Loading...</span>
-            </>
-          ) : (
-            'Generate Notes'
-          )}
-        </Button>
-      </Form>
+      <Button variant="primary" onClick={handleUpload} disabled={loading} className="w-100">
+        {loading ? <Spinner animation="border" size="sm" /> : 'Generate Notes'}
+      </Button>
     </div>
   );
 };

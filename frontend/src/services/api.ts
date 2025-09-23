@@ -33,7 +33,7 @@ export const downloadNote = async (contentId: number) => {
   return response.data;
 };
 
-export const login = async (username, password) => {
+export const login = async (username: string, password: string) => {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
@@ -42,7 +42,7 @@ export const login = async (username, password) => {
     return response.data;
 };
 
-export const register = async (username, password) => {
+export const register = async (username: string, password: string) => {
     const response = await axios.post(`${API_URL}/users/`, { username, password });
     return response.data;
 };
