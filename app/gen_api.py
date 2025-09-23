@@ -1,9 +1,7 @@
 import os
 from google import generativeai
-from dotenv import load_dotenv
 #utils for llm API
 
-load_dotenv()
 
 #get API key
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")

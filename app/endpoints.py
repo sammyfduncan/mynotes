@@ -1,6 +1,6 @@
 from fileinput import filename
 from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
 from sqlalchemy.orm import Session
@@ -150,10 +150,12 @@ async def receive_notes(
         return record
     elif record.status == "processing":
         #202 accepted status
-        raise HTTPException(status_code=202, detail="Proccesing...")
+        return JSONResponse(content={"detail": "Processing..."}, status_code=202)
     elif record.status == "failed":
         #505 internal server error
         raise HTTPException(status_code=500, detail="Failed to process")
+    else:
+         return JSONResponse(content={"detail": "Processing..."}, status_code=202)
 
 
 #endpoint for dashboard to get notes belonging to user
