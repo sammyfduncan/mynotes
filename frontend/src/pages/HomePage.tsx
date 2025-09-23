@@ -1,24 +1,7 @@
-
 import React, { useState } from 'react';
-import { Alert } from 'react-bootstrap';
 import FileUpload from '../components/FileUpload';
 import NoteResult from '../components/NoteResult';
-import styled, { keyframes } from 'styled-components';
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
-const HomePageContainer = styled.div`
-  animation: ${fadeIn} 0.5s ease-in-out;
-  max-width: 800px;
-  margin: 0 auto;
-`;
+import HowItWorks from '../components/HowItWorks';
 
 const HomePage: React.FC = () => {
   const [contentId, setContentId] = useState<number | null>(null);
@@ -35,18 +18,24 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <HomePageContainer>
-      {!contentId ? (
-        <>
-          <h1 className="text-center mb-4">Get Your Lecture Notes Instantly</h1>
-          <p className="text-center text-secondary mb-4">Upload a file and let our AI do the rest.</p>
-          {error && <Alert variant="danger">{error}</Alert>}
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-5xl font-bold mb-4">Get Your Lecture Notes Instantly</h1>
+        <p className="text-xl text-gray-600 dark:text-gray-400">Upload a file and let our AI do the rest.</p>
+      </div>
+
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-4">Try it out now:</h2>
+        {error && <div className="bg-red-500 text-white p-4 rounded-lg mb-4">{error}</div>}
+        {contentId ? (
+          <NoteResult contentId={contentId} />
+        ) : (
           <FileUpload onUploadSuccess={handleUploadSuccess} onError={handleError} />
-        </>
-      ) : (
-        <NoteResult contentId={contentId} />
-      )}
-    </HomePageContainer>
+        )}
+      </div>
+
+      <HowItWorks />
+    </div>
   );
 };
 

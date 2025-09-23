@@ -1,24 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Spinner, Alert } from 'react-bootstrap';
 import { getUserNotes } from '../services/api';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-
-const DashboardContainer = styled.div`
-  .table {
-    background-color: var(--secondary-bg);
-    color: var(--primary-text);
-  }
-
-  .table thead th {
-    border-bottom: 2px solid var(--accent-color);
-  }
-
-  .table tbody tr:hover {
-    background-color: #3a3a3a;
-  }
-`;
 
 const DashboardPage: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -41,41 +23,43 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <Spinner animation="border" variant="primary" />;
+    return <p>Loading...</p>;
   }
 
   if (error) {
-    return <Alert variant="danger">{error}</Alert>;
+    return <div className="bg-red-500 text-white p-4 rounded-lg">{error}</div>;
   }
 
   return (
-    <DashboardContainer>
-      <h2 className="mb-4">Your Notes</h2>
-      <Table striped hover responsive variant="dark">
-        <thead>
-          <tr>
-            <th>File Name</th>
-            <th>Note Style</th>
-            <th>Date Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {notes.map((note) => (
-            <tr key={note.id}>
-              <td>{note.filename}</td>
-              <td>{note.style}</td>
-              <td>{new Date(note.created_at).toLocaleDateString()}</td>
-              <td>
-                <Link to={`/notes/${note.id}`} className="btn btn-primary">
-                  View/Download
-                </Link>
-              </td>
+    <div className="max-w-4xl mx-auto">
+      <h2 className="text-4xl font-bold mb-8">Your Notes</h2>
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="border-b border-gray-200 dark:border-gray-700">
+            <tr>
+              <th className="p-4">File Name</th>
+              <th className="p-4">Note Style</th>
+              <th className="p-4">Date Created</th>
+              <th className="p-4">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-    </DashboardContainer>
+          </thead>
+          <tbody>
+            {notes.map((note) => (
+              <tr key={note.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700">
+                <td className="p-4">{note.filename}</td>
+                <td className="p-4">{note.style}</td>
+                <td className="p-4">{new Date(note.created_at).toLocaleDateString()}</td>
+                <td className="p-4">
+                  <Link to={`/notes/${note.id}`} className="py-2 px-4 bg-electric-blue text-white font-bold rounded-lg">
+                    View/Download
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 

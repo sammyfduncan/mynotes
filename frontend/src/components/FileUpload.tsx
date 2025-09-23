@@ -1,22 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import styled from 'styled-components';
-import { Form, Button, Spinner } from 'react-bootstrap';
 import { uploadFile } from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
-
-const DropzoneContainer = styled.div`
-  border: 2px dashed var(--secondary-text);
-  border-radius: 10px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-
-  &:hover {
-    border-color: var(--accent-color);
-  }
-`;
 
 interface FileUploadProps {
   onUploadSuccess: (contentId: number) => void;
@@ -58,29 +43,36 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError }) => 
   };
 
   return (
-    <div className="my-4">
-      <DropzoneContainer {...getRootProps()}>
+    <div className="space-y-6">
+      <div
+        {...getRootProps()}
+        className={`p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-electric-blue' : 'border-gray-300 dark:border-gray-700'}`}>
         <input {...getInputProps()} />
-        {
-          isDragActive ?
-            <p>Drop the files here ...</p> :
-            <p>Drag 'n' drop some files here, or click to select files</p>
-        }
-        {file && <p>Selected file: {file.name}</p>}
-      </DropzoneContainer>
+        <p className="text-lg">{isDragActive ? 'Drop the files here ...' : "Drag 'n' drop some files here, or click to select files"}</p>
+        {file && <p className="mt-4 text-gray-500">Selected file: {file.name}</p>}
+      </div>
 
-      <Form.Group controlId="noteStyle" className="my-3">
-        <Form.Label>Note Style</Form.Label>
-        <Form.Select value={noteStyle} onChange={(e) => setNoteStyle(e.target.value)}>
+      <div>
+        <label htmlFor="noteStyle" className="block text-lg font-medium mb-2">Note Style</label>
+        <select
+          id="noteStyle"
+          value={noteStyle}
+          onChange={(e) => setNoteStyle(e.target.value)}
+          className="w-full p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-electric-blue focus:border-transparent"
+        >
           <option value="default">Default</option>
           <option value="concise">Concise</option>
           <option value="detailed">Detailed</option>
-        </Form.Select>
-      </Form.Group>
+        </select>
+      </div>
 
-      <Button variant="primary" onClick={handleUpload} disabled={loading} className="w-100">
-        {loading ? <Spinner animation="border" size="sm" /> : 'Generate Notes'}
-      </Button>
+      <button
+        onClick={handleUpload}
+        disabled={loading}
+        className="w-full py-3 px-4 bg-electric-blue text-white font-bold rounded-lg disabled:bg-gray-400 transition-colors"
+      >
+        {loading ? 'Generating...' : 'Generate Notes'}
+      </button>
     </div>
   );
 };

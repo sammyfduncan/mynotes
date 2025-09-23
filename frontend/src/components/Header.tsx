@@ -1,49 +1,50 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-
-const HeaderContainer = styled.header`
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--primary-bg);
-  border-bottom: 1px solid var(--secondary-bg);
-`;
-
-const Logo = styled(Link)`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-text);
-  text-decoration: none;
-`;
-
-const Nav = styled.nav`
-  display: flex;
-  gap: 2rem;
-`;
-
-const NavLink = styled(Link)`
-  color: var(--secondary-text);
-  text-decoration: none;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: var(--primary-text);
-  }
-`;
+import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import Logo from './Logo';
 
 const Header: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = React.useState(!!localStorage.getItem('token'));
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!localStorage.getItem('token'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    navigate('/');
+  };
+
   return (
-    <HeaderContainer>
-      <Logo to="/">MyNotes</Logo>
-      <Nav>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/about">About</NavLink>
-        <NavLink to="/dashboard">Dashboard</NavLink>
-        <NavLink to="/login">Login</NavLink>
-      </Nav>
-    </HeaderContainer>
+    <header className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+      <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-electric-blue">
+        <Logo />
+        MyNotes
+      </Link>
+      <nav className="flex items-center gap-8">
+        <Link to="/" className="text-lg hover:text-electric-blue">Home</Link>
+        <Link to="/about" className="text-lg hover:text-electric-blue">About</Link>
+        {isAuthenticated && <Link to="/dashboard" className="text-lg hover:text-electric-blue">Dashboard</Link>}
+        <button onClick={toggleTheme} className="text-lg">
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+        {isAuthenticated ? (
+          <button onClick={handleLogout} className="px-4 py-2 bg-electric-blue text-white rounded-lg">Logout</button>
+        ) : (
+          <Link to="/login" className="px-4 py-2 bg-electric-blue text-white rounded-lg">Login / Signup</Link>
+        )}
+      </nav>
+    </header>
   );
 };
 

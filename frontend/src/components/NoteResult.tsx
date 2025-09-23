@@ -1,30 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { Button, Spinner, Alert } from 'react-bootstrap';
 import { getNoteResult, downloadNote } from '../services/api';
 import ReactMarkdown from 'react-markdown';
-import styled, { keyframes } from 'styled-components';
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
-const NoteContainer = styled.div`
-  animation: ${fadeIn} 0.5s ease-in-out;
-  background-color: var(--secondary-bg);
-  border-radius: 10px;
-  padding: 2rem;
-  margin-top: 2rem;
-`;
-
-const LoadingContainer = styled.div`
-  text-align: center;
-  padding: 4rem;
-`;
 
 interface NoteResultProps {
   contentId: number;
@@ -73,25 +50,26 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
 
   if (loading) {
     return (
-      <LoadingContainer>
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Processing your notes...</p>
-      </LoadingContainer>
+      <div className="text-center p-12">
+        <p className="text-lg">Processing your notes...</p>
+      </div>
     );
   }
 
   if (error) {
-    return <Alert variant="danger">{error}</Alert>;
+    return <div className="bg-red-500 text-white p-4 rounded-lg">{error}</div>;
   }
 
   return (
-    <NoteContainer>
-      <h2>Your Notes</h2>
-      <ReactMarkdown>{note.notes}</ReactMarkdown>
-      <Button variant="primary" onClick={handleDownload} className="mt-3">
+    <div className="p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
+      <h2 className="text-3xl font-bold mb-4">Your Notes</h2>
+      <div className="prose dark:prose-invert max-w-none">
+        <ReactMarkdown>{note.notes}</ReactMarkdown>
+      </div>
+      <button onClick={handleDownload} className="mt-6 py-2 px-4 bg-electric-blue text-white font-bold rounded-lg">
         Download Note
-      </Button>
-    </NoteContainer>
+      </button>
+    </div>
   );
 };
 
