@@ -8,43 +8,32 @@ from .gen_api import gen_notes
 
 #worker function to process file contents 
 def process_content(content_id : int):
-    #creates a database session
-    with SessionLocal() as db:
-        #retrieve specific content 
-        record = db.query(Content).filter(Content.id == content_id).first()
-        if not record:
-            return
-
-        try: 
-            #now call llm util function
-            note_str = gen_notes(
-                file_path=record.file_path,
-                style=record.style
-                )
-        
-            if not note_str:
-                record.status = "failed"
-                db.commit()
+    try:
+        with SessionLocal() as db:
+            record = db.query(Content).filter(Content.id == content_id).first()
+            if not record:
                 return
+            
+        note_str = gen_notes(
+            file_path=record.file_path,
+            style=record.style
+        )
 
-            #call helper
-            note_path = save_notes(
-                notes_content=note_str,
-                content_id=record.id
-            )
+        if not note_str:
+            update_note_db(content_id, "", "", "failed")
+            return
+        
+        note_path = save_notes(
+            notes_content=note_str,
+            content_id=record.id
+        )
 
-            #update record in memory
-            record.note_file_path = note_path
-            record.status = "complete"
-            record.notes = note_str
+        update_note_db(content_id, note_str, note_path, "complete")
 
-        except Exception as e:
-            print(f"Failed to process {content_id}: {e}")
-            record.status = "failed"
+    except Exception as e:
+        print(f"Failed to process {content_id}: {e}")
+        update_note_db(content_id, "", "", "failed")
 
-        finally: 
-            #commit changes to db regardless of success
-            db.commit()
 
  #helper to save notes file 
 def save_notes(
@@ -57,4 +46,18 @@ def save_notes(
         f.write(notes_content)
         return note_path
     
-    
+#responsible for updating note record in db
+def update_note_db(
+        content_id: int,
+        note_str: str,
+        note_path: str,
+        status: str
+):
+    with SessionLocal() as db:
+        record = db.query(Content).filter(Content.id == content_id).first()
+        if record:
+            record.notes = note_str
+            record.note_file_path = note_path
+            record.status = status
+            db.commit()
+        
