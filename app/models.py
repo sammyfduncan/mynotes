@@ -22,16 +22,6 @@ class Content(Base):
     #link back to the user model
     owner = relationship("User")
 
-#api response model for generated notes 
-class Notes(BaseModel):
-    id : int
-    filename : str 
-    notes : str 
-
-    #enable ORM mode 
-    class Config:
-        from_attributes = True
-
 #user auth
 class User(Base):
     __tablename__ = "users"

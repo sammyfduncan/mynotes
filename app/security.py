@@ -11,6 +11,9 @@ import os
 
 #configuration
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable not set. Please create a .env file and set it.")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXP = 30 #minutes
 

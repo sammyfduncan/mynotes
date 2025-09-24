@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import Optional, List
 from .database import get_db
-from .models import Content, Notes, User
+from .models import Content, User
 from .utils import process_content
 from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, current_user_optional, guest_id_optional, ACCESS_TOKEN_EXP
-from .schemas import CreateUser, UserOut
+from .schemas import CreateUser, UserOut, NotesOut
 import uuid, shutil
 from app import security
 
@@ -118,7 +118,7 @@ async def upload_file(
 
 #endpoint for receiving processed notes 
 @router.get("/api/results/{content_id}",
-          response_model=Notes,
+          response_model=NotesOut,
           tags=["Note Creation"],
           responses={
                202: {"description": "Processing..."},
@@ -159,7 +159,7 @@ async def receive_notes(
 
 
 #endpoint for dashboard to get notes belonging to user
-@router.get("/api/dashboard/", response_model=List[Notes], tags={"User Dashboard"})
+@router.get("/api/dashboard/", response_model=List[NotesOut], tags={"User Dashboard"})
 async def get_user_notes(
      db : Session = Depends(get_db),
      current_user : User = Depends(get_current_user)     
