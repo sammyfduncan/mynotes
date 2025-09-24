@@ -1,12 +1,25 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FileUpload from '../components/FileUpload';
 import NoteResult from '../components/NoteResult';
 import HowItWorks from '../components/HowItWorks';
+import { v4 as uuidv4 } from 'uuid';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
   const [contentId, setContentId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [guestId, setGuestId] = useState<string>('');
+
+  useEffect(() => {
+    let currentGuestId = sessionStorage.getItem('guestId');
+    if (!currentGuestId) {
+      currentGuestId = uuidv4();
+      sessionStorage.setItem('guestId', currentGuestId);
+    }
+    setGuestId(currentGuestId);
+  }, []);
 
   const handleUploadSuccess = (id: number) => {
     setContentId(id);
@@ -28,9 +41,22 @@ const HomePage: React.FC = () => {
         <div className="w-full max-w-2xl mt-8">
             {error && <div className="bg-red-500 text-white p-4 rounded-lg mb-4">{error}</div>}
             {contentId ? (
+              <>
                 <NoteResult contentId={contentId} />
+                <motion.div 
+                  className="mt-12 text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  viewport={{ once: true }}
+                >
+                  <p className="text-xl">
+                    <Link to="/login" className="text-electric-blue hover:underline">Create an account</Link> for free to generate more notes.
+                  </p>
+                </motion.div>
+              </>
             ) : (
-                <FileUpload onUploadSuccess={handleUploadSuccess} onError={handleError} />
+                <FileUpload onUploadSuccess={handleUploadSuccess} onError={handleError} guestId={guestId} />
             )}
         </div>
       </section>

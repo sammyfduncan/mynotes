@@ -12,12 +12,18 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<any>(null);
+  const guestId = sessionStorage.getItem('guestId') || '';
 
   useEffect(() => {
     const poll = setInterval(async () => {
       try {
-        const data = await getNoteResult(contentId);
+        const data = await getNoteResult(contentId, guestId);
         if (data.status === 'complete') {
+          // Remove the first line of the notes
+          const notesArray = data.notes.split('\n');
+          notesArray.shift();
+          data.notes = notesArray.join('\n');
+          
           setNote(data);
           setLoading(false);
           clearInterval(poll);
@@ -32,11 +38,11 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
     }, 3000);
 
     return () => clearInterval(poll);
-  }, [contentId]);
+  }, [contentId, guestId]);
 
   const handleDownload = async () => {
     try {
-      const blob = await downloadNote(contentId);
+      const blob = await downloadNote(contentId, guestId);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -47,6 +53,13 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
     } catch (err) {
       setError('Failed to download note.');
     }
+  };
+
+  const getFilenameWithoutExtension = (filename: string) => {
+    if (!filename) return '';
+    const lastDotIndex = filename.lastIndexOf('.');
+    if (lastDotIndex === -1) return filename; // No extension found
+    return filename.substring(0, lastDotIndex);
   };
 
   if (loading) {
@@ -78,7 +91,7 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
     >
-      <h2 className="text-3xl font-bold mb-4">Your Notes</h2>
+      <h2 className="text-3xl font-bold mb-4">Notes for: {getFilenameWithoutExtension(note?.filename)}</h2>
       <div className="prose dark:prose-invert max-w-none">
         {note && <ReactMarkdown>{note.notes}</ReactMarkdown>}
       </div>

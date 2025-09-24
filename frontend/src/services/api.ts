@@ -14,6 +14,7 @@ export const uploadFile = async (file: File, noteStyle: string, guestId: string)
 
   const response = await axios.post(`${API_URL}/upload/`, formData, {
     headers: {
+      ...getAuthHeaders(),
       'Content-Type': 'multipart/form-data',
       'guest-id': guestId
     },
@@ -21,35 +22,47 @@ export const uploadFile = async (file: File, noteStyle: string, guestId: string)
   return response.data;
 };
 
-export const getNoteResult = async (contentId: number) => {
-  const response = await axios.get(`${API_URL}/api/results/${contentId}`);
-  return response.data;
-};
-
-export const downloadNote = async (contentId: number) => {
-  const response = await axios.get(`${API_URL}/download/${contentId}`, {
-    responseType: 'blob',
+export const getNoteResult = async (contentId: number, guestId: string) => {
+  const response = await axios.get(`${API_URL}/api/results/${contentId}`, {
+    headers: {
+      ...getAuthHeaders(),
+      'guest-id': guestId,
+    },
   });
   return response.data;
 };
 
-export const login = async (username: string, password: string) => {
+export const downloadNote = async (contentId: number, guestId: string) => {
+  const response = await axios.get(`${API_URL}/download/${contentId}`, {
+    responseType: 'blob',
+    headers: {
+      ...getAuthHeaders(),
+      'guest-id': guestId,
+    },
+  });
+  return response.data;
+};
+
+export const login = async (email: string, password: string) => {
     const formData = new FormData();
-    formData.append('username', username);
+    formData.append('username', email);
     formData.append('password', password);
 
     const response = await axios.post(`${API_URL}/token`, formData);
     return response.data;
 };
 
-export const register = async (username: string, password: string) => {
-    const response = await axios.post(`${API_URL}/users/`, { username, password });
+export const register = async (email: string, password: string) => {
+    const response = await axios.post(`${API_URL}/users/`, { email, password });
+    return response.data;
+};
+
+export const getLoggedInUser = async () => {
+    const response = await axios.get(`${API_URL}/users/me`, { headers: getAuthHeaders() });
     return response.data;
 };
 
 export const getUserNotes = async () => {
-    const response = await axios.get(`${API_URL}/api/dashboard/`, {
-        headers: getAuthHeaders(),
-    });
+    const response = await axios.get(`${API_URL}/api/dashboard/`, { headers: getAuthHeaders() });
     return response.data;
 };

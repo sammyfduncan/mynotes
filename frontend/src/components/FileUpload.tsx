@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { uploadFile } from '../services/api';
-import { v4 as uuidv4 } from 'uuid';
 import { FaList, FaCompressArrowsAlt, FaExpandArrowsAlt } from 'react-icons/fa';
 import { IconType } from 'react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,9 +9,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface FileUploadProps {
   onUploadSuccess: (contentId: number) => void;
   onError: (error: string) => void;
+  guestId: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError, guestId }) => {
   const [file, setFile] = useState<File | null>(null);
   const [noteStyle, setNoteStyle] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -41,7 +41,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError }) => 
     onError('');
 
     try {
-      const guestId = uuidv4();
       const data = await uploadFile(file, noteStyle, guestId);
       onUploadSuccess(data.content_id);
     } catch (err: any) {

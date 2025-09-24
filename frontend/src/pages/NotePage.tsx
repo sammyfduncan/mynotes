@@ -9,12 +9,13 @@ const NotePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<any>(null);
+  const guestId = sessionStorage.getItem('guestId') || '';
 
   useEffect(() => {
     const fetchNote = async () => {
       try {
         if (id) {
-          const data = await getNoteResult(parseInt(id));
+          const data = await getNoteResult(parseInt(id), guestId);
           setNote(data);
         }
       } catch (err: any) {
@@ -25,12 +26,12 @@ const NotePage: React.FC = () => {
     };
 
     fetchNote();
-  }, [id]);
+  }, [id, guestId]);
 
   const handleDownload = async () => {
     try {
       if (id) {
-        const blob = await downloadNote(parseInt(id));
+        const blob = await downloadNote(parseInt(id), guestId);
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
