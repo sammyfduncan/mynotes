@@ -220,18 +220,18 @@ async def new_user(
 ):
      """
      Registers new user account.
-     Creates a new user user with user and hashed password.
-     Username must not be already taken. 
+     Creates a new user user with email and hashed password.
+     Email must not be already taken. 
      Returns the new users public info upon successful registration.
      """
-     db_user = db.query(User).filter(User.username == user.username).first()
+     db_user = db.query(User).filter(User.email == user.email).first()
 
      if (db_user):
-          raise HTTPException(status_code=400, detail="Username already registered")
+          raise HTTPException(status_code=400, detail="Email already registered")
      
      hashed_pw = get_pw_hash(user.password)
      
-     db_user = User(username=user.username, hashed_pw=hashed_pw)
+     db_user = User(email=user.email, hashed_pw=hashed_pw)
      db.add(db_user)
      db.commit()
      db.refresh(db_user)
@@ -246,12 +246,12 @@ async def login_access_token(
 ):
      """
      Log in to get access token.
-     Authenticates a user based on user and password provided in form.
+     Authenticates a user based on email and password provided in form.
      If credentials are valid, returns a JWT bearer token.
      Token can then be used to access protected endpoints. 
      """
      user = db.query(User).filter(
-          User.username == form_data.username
+          User.email == form_data.username
      ).first()
 
      if not user or not verify_password(
@@ -260,14 +260,14 @@ async def login_access_token(
      ):
           raise HTTPException(
                status_code=401,
-               detail="Incorrect username or password",
+               detail="Incorrect email or password",
                headers={"WWW_Authenticate" : "Bearer"},
           )
      
      #access token expiry logic 
      access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXP)
      access_token = create_acc_token(
-          data={"sub" : user.username},
+          data={"sub" : user.email},
           expiry_delta=access_token_expires
      )
      return {"access_token": access_token, "token_type": "bearer"}

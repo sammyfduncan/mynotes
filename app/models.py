@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, TIMESTAMP, text
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -15,6 +15,7 @@ class Content(Base):
     note_file_path = Column(String)
     status = Column(String, default="processing")
     style = Column(String, default="default")
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     guest_session_id = Column(String, unique=True, index=True, nullable=True)
     
@@ -24,7 +25,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     hashed_pw = Column(String)
     
     notes = relationship("Content", back_populates="owner", cascade="all, delete-orphan")

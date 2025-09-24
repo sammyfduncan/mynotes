@@ -1,11 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 class TokenData(BaseModel):
-    username : Optional[str] = None
+    email : Optional[str] = None
 
 class CreateUser(BaseModel):
-    username : str 
+    email : EmailStr 
     password : str
 
 class PasswordUpdate(BaseModel):
@@ -15,7 +16,7 @@ class PasswordUpdate(BaseModel):
 #check if in DB
 class UserCheck(BaseModel):
     id : int
-    username : str
+    email : str
     hashed_pw : str 
 
     class Config:
@@ -24,7 +25,7 @@ class UserCheck(BaseModel):
 #for user response that doesnt include pw field
 class UserOut(BaseModel):
     id : int
-    username : str
+    email : EmailStr
 
     class Config:
         from_attributes = True
@@ -36,6 +37,7 @@ class NotesOut(BaseModel):
     notes: Optional[str] = None
     status: str
     note_file_path: Optional[str] = None
+    created_at: datetime
 
     class Config:
         from_attributes = True

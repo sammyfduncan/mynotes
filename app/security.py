@@ -5,7 +5,7 @@ from .database import get_db
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import os
 
@@ -32,9 +32,9 @@ def get_pw_hash(password):
 def create_acc_token(data : dict, expiry_delta : Optional[timedelta] = None):
     encode = data.copy()
     if expiry_delta:
-        expire = datetime.utcnow() + expiry_delta
+        expire = datetime.now(timezone.utc) + expiry_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
         
     encode.update({"exp" : expire})
     encoded_jwt = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -56,16 +56,16 @@ def get_current_user(
             SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-        username : str = payload.get("sub")
+        email : str = payload.get("sub")
 
-        if username is None:
+        if email is None:
             raise credentials_exception
         
-        token_data = schemas.TokenData(username=username)
+        token_data = schemas.TokenData(email=email)
     except JWTError:
         raise credentials_exception
     
-    user = db.query(models.User).filter(models.User.username == token_data.username).first()
+    user = db.query(models.User).filter(models.User.email == token_data.email).first()
 
     if user is None:
         raise credentials_exception
@@ -94,13 +94,13 @@ async def current_user_optional(
             SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-        username : str = payload.get("sub")
+        email : str = payload.get("sub")
 
-        if username is None:
+        if email is None:
             return None
         user = db.query(
             models.User).filter(
-                models.User.username == username).first()
+                models.User.email == email).first()
         return user
     except JWTError:
         return None #token invalid, so guest
@@ -109,6 +109,3 @@ async def guest_id_optional(
     guest_id : Optional[str] = Header(None)
 ) -> Optional[str]:
     return guest_id
-    
-
-
