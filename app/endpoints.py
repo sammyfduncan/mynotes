@@ -203,7 +203,7 @@ async def download_note(
           if not is_owner and not is_guest:
                raise HTTPException(
                     status_code=403,
-                    detail="You've reached your guest download limit.\n"
+                    detail="You\'ve reached your guest download limit.\n"
                )
 
           return FileResponse(
@@ -212,7 +212,6 @@ async def download_note(
                media_type='text/markdown'
      )
 
-#user registration endpoint
 @router.post("/users/", response_model=UserOut, tags=["Authentication"])
 async def new_user(
      user : CreateUser,
@@ -270,8 +269,7 @@ async def login_access_token(
           data={"sub" : user.email},
           expiry_delta=access_token_expires
      )
-     return {"access_token": access_token, "token_type": "bearer"}
-
+     return JSONResponse(content={"access_token": access_token, "token_type": "bearer"})
 
 @router.patch("/users/me/password", status_code=status.HTTP_200_OK, tags=["Account Management"])
 async def update_user_password(
@@ -279,7 +277,7 @@ async def update_user_password(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Update the current users password."""
+    """Update the current user's password."""
     if not verify_password(password_update.current_password, current_user.hashed_pw):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect current password")
     
@@ -298,3 +296,8 @@ async def delete_user_account(
     db.delete(current_user)
     db.commit()
     return {"message": "Account deleted successfully"}
+
+@router.get("/users/me", response_model=UserOut, tags=["Users"])
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    """Get the current authenticated user's information."""
+    return current_user

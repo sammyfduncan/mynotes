@@ -20,8 +20,8 @@ os.makedirs("uploads", exist_ok=True)
 os.makedirs("notes", exist_ok=True)
 
 app = FastAPI(
-    title="StudyNotes API",
-    description="Headless backend API for StudyNotes project (awaiting frontend development)",
+    title="MyNotes",
+    description="MyNotes web app",
     version="1.0.0"
 )
 
