@@ -7,6 +7,11 @@ class TokenData(BaseModel):
 class CreateUser(BaseModel):
     username : str 
     password : str
+
+class PasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
+
 #check if in DB
 class UserCheck(BaseModel):
     id : int

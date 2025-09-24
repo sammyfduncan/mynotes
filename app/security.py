@@ -65,6 +65,13 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
     
+    user = db.query(models.User).filter(models.User.username == token_data.username).first()
+
+    if user is None:
+        raise credentials_exception
+
+    return user
+    
 #optional authentication dependency function
 #allows upload endpoint to accept requests from both guest and users
 async def current_user_optional(

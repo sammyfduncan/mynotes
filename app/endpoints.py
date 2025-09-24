@@ -1,5 +1,5 @@
 from fileinput import filename
-from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form
+from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
@@ -10,7 +10,7 @@ from .database import get_db
 from .models import Content, User
 from .utils import process_content
 from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, current_user_optional, guest_id_optional, ACCESS_TOKEN_EXP
-from .schemas import CreateUser, UserOut, NotesOut
+from .schemas import CreateUser, UserOut, NotesOut, PasswordUpdate
 import uuid, shutil
 from app import security
 
@@ -273,4 +273,28 @@ async def login_access_token(
      return {"access_token": access_token, "token_type": "bearer"}
 
 
-     
+@router.patch("/users/me/password", status_code=status.HTTP_200_OK, tags=["Account Management"])
+async def update_user_password(
+    password_update: PasswordUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update the current users password."""
+    if not verify_password(password_update.current_password, current_user.hashed_pw):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect current password")
+    
+    new_hashed_password = get_pw_hash(password_update.new_password)
+    current_user.hashed_pw = new_hashed_password
+    db.commit()
+    
+    return {"message": "Password updated successfully"}
+
+@router.delete("/users/me", status_code=status.HTTP_200_OK, tags=["Account Management"])
+async def delete_user_account(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete the current user's account and all their notes."""
+    db.delete(current_user)
+    db.commit()
+    return {"message": "Account deleted successfully"}

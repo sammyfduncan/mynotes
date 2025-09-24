@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+
+# load .env variables before other imports
+load_dotenv()
+
 from .endpoints import router
 from .database import Base, engine
 import os 
 
-load_dotenv()
 
 #allowed frontend origins
 origins = [
