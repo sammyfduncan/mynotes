@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { getNoteResult, downloadNote } from '../services/api';
 import ReactMarkdown from 'react-markdown';
@@ -79,7 +80,7 @@ const NoteResult: React.FC<NoteResultProps> = ({ contentId }) => {
     >
       <h2 className="text-3xl font-bold mb-4">Your Notes</h2>
       <div className="prose dark:prose-invert max-w-none">
-        <ReactMarkdown>{note.notes}</ReactMarkdown>
+        {note && <ReactMarkdown>{note.notes}</ReactMarkdown>}
       </div>
       <motion.button 
         onClick={handleDownload} 
