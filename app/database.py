@@ -8,11 +8,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./studynotes.db")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
-if SQLALCHEMY_DATABASE_URL.startswith("postgres"):
+# Construct the URL for PostgreSQL if all parts are present, otherwise fallback to SQLite
+if all([DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME]):
+    SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
 else:
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./studynotes.db"
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
