@@ -1,14 +1,22 @@
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
+
 #handles connection to DB 
 
+load_dotenv()
 
-DATABASE_URL = "sqlite:///./studynotes.db"
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./studynotes.db")
 
-engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
-)
+if SQLALCHEMY_DATABASE_URL.startswith("postgres"):
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+else:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    )
+
 Base = declarative_base()
 
 #create session factory object

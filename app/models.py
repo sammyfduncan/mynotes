@@ -14,8 +14,7 @@ class Content(Base):
     file_path = Column(String)
     note_file_path = Column(String)
     status = Column(String, default="processing")
-    style = Column(String, default="default")
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     guest_session_id = Column(String, unique=True, index=True, nullable=True)
     
@@ -29,3 +28,13 @@ class User(Base):
     hashed_pw = Column(String)
     
     notes = relationship("Content", back_populates="owner", cascade="all, delete-orphan")
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String)
+    subject = Column(String)
+    message = Column(Text)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('CURRENT_TIMESTAMP'))

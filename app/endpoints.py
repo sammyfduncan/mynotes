@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import Optional, List
 from .database import get_db
-from .models import Content, User
+from .models import Content, User, Message
 from .utils import process_content
 from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, current_user_optional, guest_id_optional, ACCESS_TOKEN_EXP
-from .schemas import CreateUser, UserOut, NotesOut, PasswordUpdate
+from .schemas import CreateUser, UserOut, NotesOut, PasswordUpdate, MessageCreate
 import uuid, shutil
 from app import security
 
@@ -267,9 +267,56 @@ async def login_access_token(
      access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXP)
      access_token = create_acc_token(
           data={"sub" : user.email},
-          expiry_delta=access_token_expires
+          expires_delta=access_token_expires
      )
      return JSONResponse(content={"access_token": access_token, "token_type": "bearer"})
+
+@router.patch("/api/results/{content_id}", response_model=NotesOut, tags=["Note Management"])
+async def rename_note(
+    content_id: int,
+    update_data: dict, # Allows for more fields in the future
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Rename a specific note."""
+    note_query = db.query(Content).filter(Content.id == content_id)
+    note = note_query.first()
+
+    if note is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+
+    if note.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to edit this note")
+
+    if 'filename' in update_data:
+        note.filename = update_data['filename']
+    if 'notes' in update_data:
+        note.notes = update_data['notes']
+    
+    db.commit()
+    db.refresh(note)
+    return note
+
+@router.delete("/api/results/{content_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Note Management"])
+async def delete_note(
+    content_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a specific note owned by the current user."""
+    note_query = db.query(Content).filter(Content.id == content_id)
+    note = note_query.first()
+
+    if note is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+
+    if note.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this note")
+
+    note_query.delete(synchronize_session=False)
+    db.commit()
+    
+    return
 
 @router.patch("/users/me/password", status_code=status.HTTP_200_OK, tags=["Account Management"])
 async def update_user_password(
@@ -301,3 +348,15 @@ async def delete_user_account(
 async def read_users_me(current_user: User = Depends(get_current_user)):
     """Get the current authenticated user's information."""
     return current_user
+
+@router.post("/contact", status_code=status.HTTP_201_CREATED, tags=["Contact"])
+async def submit_contact_form(
+    message: MessageCreate,
+    db: Session = Depends(get_db)
+):
+    """Submit a contact form message."""
+    db_message = Message(**message.dict())
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    return {"message": "Message sent successfully!"}

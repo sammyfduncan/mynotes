@@ -11,9 +11,8 @@ import os
 
 
 #allowed frontend origins
-origins = [
-    "http://localhost:3000",
-]
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+origins = CORS_ORIGINS.split(",")
 
 #create dirs if not exist
 os.makedirs("uploads", exist_ok=True)

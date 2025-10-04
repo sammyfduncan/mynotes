@@ -29,10 +29,10 @@ def get_pw_hash(password):
     return pwd_context.hash(password)
 
 #jwt token creation
-def create_acc_token(data : dict, expiry_delta : Optional[timedelta] = None):
+def create_acc_token(data : dict, expires_delta : Optional[timedelta] = None):
     encode = data.copy()
-    if expiry_delta:
-        expire = datetime.now(timezone.utc) + expiry_delta
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
         
