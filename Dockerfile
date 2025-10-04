@@ -8,6 +8,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
+# Create the directory for logs, as required by the EB environment
+RUN mkdir -p /tmp/sample-app
+
 # Expose the port the app runs on
 EXPOSE 8000
 
