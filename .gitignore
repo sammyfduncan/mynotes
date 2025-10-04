@@ -203,3 +203,8 @@ __marimo__/
 mynotes.db
 
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

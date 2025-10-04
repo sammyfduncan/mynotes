@@ -1,0 +1,15 @@
+.git 
+.gitignore
+
+.dockerignore
+
+
+__pycache__/
+venv/
+*.pyc
+
+frontend/node_modules/
+
+.env
+frontend/.env
+
