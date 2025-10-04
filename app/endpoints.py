@@ -1,17 +1,20 @@
 from fileinput import filename
 from fastapi import FastAPI, File, UploadFile, Depends, BackgroundTasks, HTTPException, APIRouter, Header, Form, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pathlib import Path
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import Optional, List
+import boto3
+import os
+
 from .database import get_db
 from .models import Content, User, Message
 from .utils import process_content
 from .security import get_current_user, verify_password, create_acc_token, get_pw_hash, current_user_optional, guest_id_optional, ACCESS_TOKEN_EXP
 from .schemas import CreateUser, UserOut, NotesOut, PasswordUpdate, MessageCreate
-import uuid, shutil
+import uuid
 from app import security
 
 
@@ -68,11 +71,16 @@ async def upload_file(
         id_unique = uuid.uuid4()
         file_ext = Path(file.filename).suffix
         new_filename = f"{id_unique}{file_ext}"
-        #holds unique path object 
-        file_path = Path("uploads") / new_filename   
         
-        with open(file_path, "wb") as file_obj:
-             shutil.copyfileobj(file.file, file_obj)
+        # Upload to S3 instead of local disk
+        s3_client = boto3.client("s3")
+        s3_client.upload_fileobj(
+            file.file,
+            os.getenv("S3_BUCKET_NAME"),
+            new_filename
+        )
+        # The file_path is now the key in S3
+        file_path = new_filename
 
         owner_id = None
         if current_user:
@@ -159,7 +167,7 @@ async def receive_notes(
 
 
 #endpoint for dashboard to get notes belonging to user
-@router.get("/api/dashboard/", response_model=List[NotesOut], tags={"User Dashboard"})
+@router.get("/api/dashboard/", response_model=List[NotesOut], tags=["User Dashboard"])
 async def get_user_notes(
      db : Session = Depends(get_db),
      current_user : User = Depends(get_current_user)     
@@ -203,14 +211,18 @@ async def download_note(
           if not is_owner and not is_guest:
                raise HTTPException(
                     status_code=403,
-                    detail="You\'ve reached your guest download limit.\n"
+                    detail="You've reached your guest download limit.\n"
                )
 
-          return FileResponse(
-               path=record.note_file_path,
-               filename=f"notes_{record.filename}.md",
-               media_type='text/markdown'
-     )
+          # Generate a presigned URL for the S3 object
+          s3_client = boto3.client("s3", region_name=os.getenv("AWS_REGION"))
+          url = s3_client.generate_presigned_url(
+              'get_object',
+              Params={'Bucket': os.getenv("S3_BUCKET_NAME"), 'Key': record.note_file_path},
+              ExpiresIn=3600  # URL expires in 1 hour
+          )
+          
+          return RedirectResponse(url=url)
 
 @router.post("/users/", response_model=UserOut, tags=["Authentication"])
 async def new_user(

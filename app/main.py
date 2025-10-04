@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from starlette.middleware.sessions import SessionMiddleware
 
 # load .env variables before other imports
 load_dotenv()
@@ -8,6 +9,11 @@ load_dotenv()
 from .endpoints import router
 from .database import Base, engine
 import os 
+
+from sqladmin import Admin, ModelView
+from .models import User, Content, Message
+from .admin_auth import authentication_backend
+from .security import SECRET_KEY
 
 
 #allowed frontend origins
@@ -24,6 +30,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Add session middleware
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
 #enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +44,26 @@ app.add_middleware(
 
 #include router in app
 app.include_router(router)
+
+#add SQLAdmin
+admin = Admin(app, engine, authentication_backend=authentication_backend)
+
+class UserAdmin(ModelView, model=User):
+    column_list = [User.id, User.email]
+    column_searchable_list = [User.email]
+    name_plural = "Users"
+
+class ContentAdmin(ModelView, model=Content):
+    column_list = [Content.id, Content.filename, Content.status, Content.owner]
+    name_plural = "Notes"
+
+class MessageAdmin(ModelView, model=Message):
+    column_list = [Message.id, Message.name, Message.email, Message.subject, Message.created_at]
+    name_plural = "Messages"
+
+admin.add_view(UserAdmin)
+admin.add_view(ContentAdmin)
+admin.add_view(MessageAdmin)
 
 #init engine 
 Base.metadata.create_all(bind=engine)
