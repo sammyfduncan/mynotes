@@ -123,7 +123,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onError, guest
         className="w-full py-3 px-4 bg-electric-blue text-white font-bold rounded-lg disabled:bg-gray-400 transition-colors"
         whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgb(0,123,255)" }}
       >
-        {loading ? 'Generating...' : 'Generate Notes'}
+        {loading ? 'Generating...' : 'Generate Notes for free'}
       </motion.button>
     </div>
   );

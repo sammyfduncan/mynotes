@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -64,5 +64,25 @@ export const getLoggedInUser = async () => {
 
 export const getUserNotes = async () => {
     const response = await axios.get(`${API_URL}/api/dashboard/`, { headers: getAuthHeaders() });
+    return response.data;
+};
+
+export const deleteNote = async (contentId: number) => {
+    const response = await axios.delete(`${API_URL}/api/results/${contentId}`, { headers: getAuthHeaders() });
+    return response.data;
+};
+
+export const renameNote = async (contentId: number, newFilename: string) => {
+    const response = await axios.patch(`${API_URL}/api/results/${contentId}`, { filename: newFilename }, { headers: getAuthHeaders() });
+    return response.data;
+};
+
+export const updateNoteContent = async (contentId: number, newContent: string) => {
+    const response = await axios.patch(`${API_URL}/api/results/${contentId}`, { notes: newContent }, { headers: getAuthHeaders() });
+    return response.data;
+};
+
+export const submitContactForm = async (name: string, email: string, subject: string, message: string) => {
+    const response = await axios.post(`${API_URL}/contact`, { name, email, subject, message });
     return response.data;
 };

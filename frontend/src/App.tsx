@@ -14,6 +14,12 @@ import PrivateRoute from './components/PrivateRoute';
 import PageTransition from './components/PageTransition';
 import { getLoggedInUser } from './services/api';
 
+import Footer from './components/Footer';
+
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+
+import ContactPage from './pages/ContactPage';
+
 const AppRoutes = () => {
   const location = useLocation();
   return (
@@ -21,6 +27,9 @@ const AppRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
         <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
+        <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
+        <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
+
         
         {/* Private Routes */}
         <Route path="/dashboard" element={<PrivateRoute />}> 
@@ -79,11 +88,12 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen">
+        <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen flex flex-col">
           <Header isAuthenticated={isAuthenticated} />
-          <main className="p-8">
+          <main className="p-8 flex-grow">
             <AppRoutes />
           </main>
+          <Footer />
         </div>
       </Router>
     </ThemeProvider>

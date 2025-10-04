@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import FileUpload from '../components/FileUpload';
 import NoteResult from '../components/NoteResult';
 import HowItWorks from '../components/HowItWorks';
+import FeatureShowcase from '../components/FeatureShowcase';
+import Testimonials from '../components/Testimonials';
+import Faq from '../components/Faq';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -62,6 +65,9 @@ const HomePage: React.FC = () => {
       </section>
 
       <HowItWorks />
+      <FeatureShowcase />
+      <Testimonials />
+      <Faq />
     </div>
   );
 };

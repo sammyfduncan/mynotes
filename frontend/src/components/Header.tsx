@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 import Logo from './Logo';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -36,9 +37,19 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated }) => {
             <Link to="/login" className="py-2 px-4 bg-electric-blue text-white font-bold rounded-lg">Login</Link>
           )}
         </nav>
-        <button onClick={toggleTheme} className="p-2 rounded-full focus:outline-none">
-          {theme === 'dark' ? <Sun /> : <Moon />}
-        </button>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.button
+            onClick={toggleTheme}
+            className="p-2 rounded-full focus:outline-none"
+            key={theme}
+            initial={{ opacity: 0, rotate: -90 }}
+            animate={{ opacity: 1, rotate: 0 }}
+            exit={{ opacity: 0, rotate: 90 }}
+            transition={{ duration: 0.3 }}
+          >
+            {theme === 'dark' ? <Sun /> : <Moon />}
+          </motion.button>
+        </AnimatePresence>
       </div>
     </header>
   );
