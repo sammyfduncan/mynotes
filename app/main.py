@@ -65,5 +65,4 @@ admin.add_view(UserAdmin)
 admin.add_view(ContentAdmin)
 admin.add_view(MessageAdmin)
 
-#init engine 
-Base.metadata.create_all(bind=engine)
+

@@ -14,15 +14,10 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
-# Construct the URL for PostgreSQL if all parts are present, otherwise fallback to SQLite
-if all([DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME]):
-    SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-else:
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./studynotes.db"
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
+# Construct the URL for PostgreSQL
+# This will intentionally fail if the environment variables are not set.
+SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 Base = declarative_base()
 
