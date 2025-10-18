@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://127.0.0.1:8000/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -23,7 +23,7 @@ export const uploadFile = async (file: File, noteStyle: string, guestId: string)
 };
 
 export const getNoteResult = async (contentId: number, guestId: string) => {
-  const response = await axios.get(`${API_URL}/api/results/${contentId}`, {
+  const response = await axios.get(`${API_URL}/results/${contentId}`, {
     headers: {
       ...getAuthHeaders(),
       'guest-id': guestId,
@@ -63,22 +63,22 @@ export const getLoggedInUser = async () => {
 };
 
 export const getUserNotes = async () => {
-    const response = await axios.get(`${API_URL}/api/dashboard/`, { headers: getAuthHeaders() });
+    const response = await axios.get(`${API_URL}/dashboard/`, { headers: getAuthHeaders() });
     return response.data;
 };
 
 export const deleteNote = async (contentId: number) => {
-    const response = await axios.delete(`${API_URL}/api/results/${contentId}`, { headers: getAuthHeaders() });
+    const response = await axios.delete(`${API_URL}/results/${contentId}`, { headers: getAuthHeaders() });
     return response.data;
 };
 
 export const renameNote = async (contentId: number, newFilename: string) => {
-    const response = await axios.patch(`${API_URL}/api/results/${contentId}`, { filename: newFilename }, { headers: getAuthHeaders() });
+    const response = await axios.patch(`${API_URL}/results/${contentId}`, { filename: newFilename }, { headers: getAuthHeaders() });
     return response.data;
 };
 
 export const updateNoteContent = async (contentId: number, newContent: string) => {
-    const response = await axios.patch(`${API_URL}/api/results/${contentId}`, { notes: newContent }, { headers: getAuthHeaders() });
+    const response = await axios.patch(`${API_URL}/results/${contentId}`, { notes: newContent }, { headers: getAuthHeaders() });
     return response.data;
 };
 

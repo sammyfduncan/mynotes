@@ -24,7 +24,7 @@ router = APIRouter()
 MAX_SIZE = 10 * 1024 * 1024
 
 #uploading content 
-@router.post("/upload/", tags=["Note Creation"])
+@router.post("/api/upload/", tags=["Note Creation"])
 async def upload_file(
     background_tasks : BackgroundTasks,
     file : UploadFile = File(...),
